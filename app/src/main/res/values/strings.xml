@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">GTX Store</string>
+
+    <string name="navigation_drawer_open">Navigation drawer abierto</string>
+    <string name="navigation_drawer_close">Navigation drawer cerrado</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Login Activity messages -->
+    <string name="msg_user_input_error">Usuario y/o contraseña erroneos</string>
+    <string name="msg_user_input_incomplete">Por favor, complete todos los campos</string>
+    <string name="msg_mismatch_passwords">Las contraseñas no coinciden</string>
+    <string name="msg_new_user_duplicated">Usuario ya ingresado</string>
+    <string name="msg_user_missing">No existe el usuario ingresado</string>
+</resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/shopping_cart"
+        android:icon="@drawable/ic_shopping_cart_white_24dp"
+        android:title="Carrito"
+        app:actionLayout="@layout/menu_cartcount"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/edit_item"
+        android:icon="@drawable/ic_shopping_cart_white_24dp"
+        android:title="Editar producto"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/remove_item"
+        android:icon="@drawable/ic_shopping_cart_white_24dp"
+        android:title="Eliminar producto"
+        app:showAsAction="never"/>
+
+</menu>

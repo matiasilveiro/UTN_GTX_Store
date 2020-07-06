@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_navgraph"
+    app:startDestination="@id/HWListFragment">
+
+    <fragment
+        android:id="@+id/HWListFragment"
+        android:name="com.utn.hwstore.fragments.HWListFragment"
+        android:label="fragment_hw_list"
+        tools:layout="@layout/fragment_hw_list" >
+        <action
+            android:id="@+id/action_HWListFragment_to_detailsFragment"
+            app:destination="@id/detailsFragment" />
+        <action
+            android:id="@+id/action_HWListFragment_to_shoppingCartFragment"
+            app:destination="@id/shoppingCartFragment" />
+        <action
+            android:id="@+id/action_HWListFragment_to_newItemFragment"
+            app:destination="@id/newItemFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailsFragment"
+        android:name="com.utn.hwstore.fragments.DetailsFragment"
+        android:label="fragment_details"
+        tools:layout="@layout/fragment_details" >
+        <argument
+            android:name="item"
+            app:argType="com.utn.hwstore.entities.HwItem" />
+        <action
+            android:id="@+id/action_detailsFragment_to_shoppingCartFragment"
+            app:destination="@id/shoppingCartFragment" />
+        <action
+            android:id="@+id/action_detailsFragment_to_newItemFragment"
+            app:destination="@id/newItemFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailsTechnicalFragment"
+        android:name="com.utn.hwstore.fragments.DetailsTechnicalFragment"
+        android:label="fragment_details_technical"
+        tools:layout="@layout/fragment_details_technical" />
+    <fragment
+        android:id="@+id/shoppingCartFragment"
+        android:name="com.utn.hwstore.fragments.ShoppingCartFragment"
+        android:label="fragment_shopping_cart"
+        tools:layout="@layout/fragment_shopping_cart" />
+    <fragment
+        android:id="@+id/newItemFragment"
+        android:name="com.utn.hwstore.fragments.NewItemFragment"
+        android:label="fragment_new_item"
+        tools:layout="@layout/fragment_new_item" >
+        <argument
+            android:name="item"
+            app:argType="com.utn.hwstore.entities.HwItem" />
+    </fragment>
+    <fragment
+        android:id="@+id/details2Fragment"
+        android:name="com.utn.hwstore.fragments.Details2Fragment"
+        android:label="Details2Fragment" />
+    <fragment
+        android:id="@+id/detailsReviewsFragment"
+        android:name="com.utn.hwstore.fragments.DetailsReviewsFragment"
+        android:label="fragment_details_reviews"
+        tools:layout="@layout/fragment_details_reviews" />
+</navigation>

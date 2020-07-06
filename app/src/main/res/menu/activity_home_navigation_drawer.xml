@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <item android:title="Mi usuario">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_user_settings"
+                    android:icon="@drawable/ic_settings_white_24dp"
+                    android:title="Configuración" />
+                <item
+                    android:id="@+id/nav_user_logout"
+                    android:icon="@drawable/ic_log_out_white_24dp"
+                    android:title="Cerrar sesión" />
+            </group>
+        </menu>
+    </item>
+
+    <group
+        android:id="@+id/group1"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_add_article"
+            android:icon="@drawable/ic_add_white_24dp"
+            android:title="Agregar artículo" />
+    </group>
+
+    <item android:title="Mis compras">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_shopping_cart"
+                    android:icon="@drawable/ic_shopping_cart_white_24dp"
+                    android:title="Carrito de compras" />
+            </group>
+        </menu>
+    </item>
+
+</menu>
