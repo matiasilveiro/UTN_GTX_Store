@@ -16,8 +16,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.rowland.cartcounter.view.CartCounterActionView
 
 import com.utn.hwstore.R
-import com.utn.hwstore.database.HwItemDao
-import com.utn.hwstore.database.productsDatabase
 import com.utn.hwstore.entities.HwItem
 import gun0912.tedbottompicker.TedBottomPicker
 import kotlinx.android.synthetic.main.fragment_new_item.*
@@ -38,9 +36,6 @@ class NewItemFragment : Fragment() {
 
     private lateinit var imgItem: ImageView
     private var imgURL: String = ""
-
-    private var db: productsDatabase? = null
-    private var itemDao: HwItemDao? = null
 
     private val args: NewItemFragmentArgs by navArgs()
     private lateinit var viewModelDetails: DetailsViewModel
@@ -84,9 +79,6 @@ class NewItemFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        db = productsDatabase.getAppDataBase(v.context)
-        itemDao = db?.hwItemDao()
-
         btnSaveProduct.setOnClickListener {
             if(isDataCompleted()) {
                 val newItem = HwItem(editBrand.text.toString(),
@@ -99,10 +91,10 @@ class NewItemFragment : Fragment() {
                 "")
 
                 if(modifyProduct) {
-                    itemDao?.updateProduct(newItem)
+                    //itemDao?.updateProduct(newItem)
                     Snackbar.make(v, "Producto modificado: ${newItem.brand} ${newItem.model}", Snackbar.LENGTH_SHORT).show()
                 } else {
-                    itemDao?.insertProduct(newItem)
+                    //itemDao?.insertProduct(newItem)
                     Snackbar.make(v, "Producto añadido: ${newItem.brand} ${newItem.model}", Snackbar.LENGTH_SHORT).show()
                 }
                 v.findNavController().navigateUp()

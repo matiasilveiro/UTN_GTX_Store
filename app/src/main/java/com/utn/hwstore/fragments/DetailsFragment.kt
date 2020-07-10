@@ -17,8 +17,6 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.rowland.cartcounter.view.CartCounterActionView
 
 import com.utn.hwstore.R
-import com.utn.hwstore.database.HwItemDao
-import com.utn.hwstore.database.productsDatabase
 import com.utn.hwstore.entities.HwItem
 
 class DetailsFragment : Fragment() {
@@ -36,9 +34,6 @@ class DetailsFragment : Fragment() {
     private lateinit var btnAddToCart: FloatingActionButton
 
     private lateinit var actionView: CartCounterActionView
-
-    private var db: productsDatabase? = null
-    private var itemDao: HwItemDao? = null
 
     private val args: DetailsFragmentArgs by navArgs()
 
@@ -93,7 +88,6 @@ class DetailsFragment : Fragment() {
                 v.findNavController().navigate(action)
             }
             R.id.remove_item -> {
-                itemDao?.delete(viewModel.item.value)
                 Snackbar.make(v, "Producto eliminado", Snackbar.LENGTH_SHORT).show()
                 v.findNavController().navigateUp()
             }
@@ -104,9 +98,6 @@ class DetailsFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-
-        db = productsDatabase.getAppDataBase(v.context)
-        itemDao = db?.hwItemDao()
 
         viewPager.adapter = createCardAdapter()
         // viewPager.isUserInputEnabled = false

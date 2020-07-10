@@ -19,8 +19,6 @@ import com.rowland.cartcounter.view.CartCounterActionView
 
 import com.utn.hwstore.R
 import com.utn.hwstore.adapters.HwItemAdapter
-import com.utn.hwstore.database.HwItemDao
-import com.utn.hwstore.database.productsDatabase
 import com.utn.hwstore.entities.HwItem
 
 class HWListFragment : Fragment() {
@@ -41,15 +39,11 @@ class HWListFragment : Fragment() {
 
     private var itemsList: ArrayList<HwItem> = ArrayList()
 
-    private var db: productsDatabase? = null
-    private var itemDao: HwItemDao? = null
-
     private lateinit var viewModelDetails: DetailsViewModel
     private lateinit var viewModelShoppingCart: ShoppingCartViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
 
         /*
         itemsList.add(HwItem("HyperX","Alloy FPS","Teclado","Teclado mecánico con pad numérico lateral","Teclado mecánico de alto rendimiento, con marco de aluminio",8800.0,
@@ -84,17 +78,6 @@ class HWListFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-
-        /*
-        db = productsDatabase.getAppDataBase(v.context)
-        itemDao = db?.hwItemDao()
-
-        for(item in itemsList) {
-            itemDao?.insertProduct(item)
-        }
-
-        itemsList = itemDao?.loadAllProducts() as ArrayList<HwItem>
-        */
 
         rvItemsList.setHasFixedSize(true)
 
