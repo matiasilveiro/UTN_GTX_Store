@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:textColorHint="@android:color/white"
             android:textColor="@android:color/white"
-            android:hint="Nombre de usuario" />
+            android:hint="@string/txt_user_username" />
     </ss.anoop.awesometextinputlayout.AwesomeTextInputLayout>
 
     <ss.anoop.awesometextinputlayout.AwesomeTextInputLayout
@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:textColorHint="@android:color/white"
             android:textColor="@android:color/white"
-            android:hint="Contraseña"
+            android:hint="@string/txt_user_password"
             android:inputType="textPassword" />
     </ss.anoop.awesometextinputlayout.AwesomeTextInputLayout>
 
@@ -58,19 +58,18 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@drawable/btn_rounded_darkred"
-        android:text="Iniciar sesion"
+        android:text="@string/txt_user_login"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toTopOf="@+id/txt_remember_password"
         app:layout_constraintEnd_toStartOf="@+id/guideline_right"
         app:layout_constraintStart_toStartOf="@+id/guideline_left"
         app:layout_constraintTop_toBottomOf="@+id/edt_password_layout" />
 
-    <Button
+    <TextView
         android:id="@+id/btn_signup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/btn_rounded_darkred"
-        android:text="Crear"
+        android:text="@string/txt_user_create"
         android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="@id/guideline_right"
         app:layout_constraintHorizontal_bias="0.5"
@@ -81,7 +80,7 @@
         android:id="@+id/txt_signup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="No tienes cuenta?"
+        android:text="@string/txt_user_noaccount"
         android:textSize="14sp"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="@+id/btn_signup"
@@ -140,7 +139,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="No recuerdo mi contraseña"
+        android:text="@string/txt_user_forgotpass"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toTopOf="@+id/guideline_bottom"
         app:layout_constraintEnd_toStartOf="@+id/guideline_right"

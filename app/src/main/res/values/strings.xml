@@ -13,4 +13,16 @@
     <string name="msg_mismatch_passwords">Las contraseñas no coinciden</string>
     <string name="msg_new_user_duplicated">Usuario ya ingresado</string>
     <string name="msg_user_missing">No existe el usuario ingresado</string>
+
+    <string name="txt_user_create"><u>Crear</u></string>
+    <string name="txt_user_noaccount">No tienes cuenta?</string>
+    <string name="txt_user_login">Iniciar sesion</string>
+    <string name="txt_user_password">Contraseña</string>
+    <string name="txt_user_username">Nombre de usuario</string>
+    <string name="txt_user_forgotpass">No recuerdo mi contraseña</string>
+    <string name="txt_newuser">Nuevo usuario</string>
+    <string name="txt_newuser_username">Ingrese su usuario</string>
+    <string name="txt_newuser_password">Ingrese la contraseña</string>
+    <string name="txt_newuser_repassword">Ingrese nuevamente la contraseña</string>
+    <string name="txt_user_signup">Crear cuenta</string>
 </resources>

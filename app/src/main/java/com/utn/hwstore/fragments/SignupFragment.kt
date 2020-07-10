@@ -1,6 +1,8 @@
 package com.utn.hwstore.fragments
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,10 +11,10 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.navigation.findNavController
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 
 import com.utn.hwstore.R
-import com.utn.hwstore.database.UserDao
-import com.utn.hwstore.database.usersDatabase
 import com.utn.hwstore.entities.User
 
 /**
@@ -26,9 +28,7 @@ class SignupFragment : Fragment() {
     private lateinit var edtPasswordCheck: EditText
     private lateinit var txtError: TextView
 
-    private var db: usersDatabase? = null
-    private var userDao: UserDao? = null
-    private lateinit var usersList: ArrayList<User>
+    private lateinit var auth: FirebaseAuth
 
     private lateinit var v: View
 
@@ -46,14 +46,13 @@ class SignupFragment : Fragment() {
 
         btnCreate = v.findViewById(R.id.btn_create)
 
+        auth = FirebaseAuth.getInstance()
+
         return v
     }
 
     override fun onStart() {
         super.onStart()
-
-        db = usersDatabase.getAppDataBase(v.context)
-        userDao = db?.userDao()
 
         btnCreate.setOnClickListener {
             if(edtUsername.text.isNotBlank() and edtPassword.text.isNotBlank()) {
@@ -62,15 +61,18 @@ class SignupFragment : Fragment() {
                 val passwordCheck = edtPasswordCheck.text.toString()
 
                 if(password == passwordCheck) {
-                    val user = User(username, password)
-                    userDao?.insertPerson(user)
-                    /*
-                    if(usersList.contains(user)) {
-                        txtError.text = getString(R.string.msg_new_user_duplicated)
-                    } else {
-                        userDao?.insertPerson(user)
-                    }
-                     */
+                    auth.createUserWithEmailAndPassword(username, password)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                // Sign in success, update UI with the signed-in user's information
+                                Log.d(TAG, "createUserWithEmail:success")
+                                val user = auth.currentUser
+                            } else {
+                                // If sign in fails, display a message to the user.
+                                Log.w(TAG, "createUserWithEmail:failure", task.exception)
+                                Snackbar.make(v, "Authentication failed.", Snackbar.LENGTH_SHORT).show()
+                            }
+                        }
 
                     v.findNavController().navigateUp()
                 } else {

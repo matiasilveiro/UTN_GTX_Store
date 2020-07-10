@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:textColorHint="@android:color/white"
             android:textColor="@android:color/white"
-            android:hint="Ingrese su usuario" />
+            android:hint="@string/txt_newuser_username" />
     </ss.anoop.awesometextinputlayout.AwesomeTextInputLayout>
 
     <ss.anoop.awesometextinputlayout.AwesomeTextInputLayout
@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:textColorHint="@android:color/white"
             android:textColor="@android:color/white"
-            android:hint="Ingrese la contraseña"
+            android:hint="@string/txt_newuser_password"
             android:inputType="textPassword" />
     </ss.anoop.awesometextinputlayout.AwesomeTextInputLayout>
 
@@ -72,7 +72,7 @@
             android:layout_height="wrap_content"
             android:textColorHint="@android:color/white"
             android:textColor="@android:color/white"
-            android:hint="Ingrese nuevamente la contraseña"
+            android:hint="@string/txt_newuser_repassword"
             android:inputType="textPassword" />
     </ss.anoop.awesometextinputlayout.AwesomeTextInputLayout>
 
@@ -80,7 +80,7 @@
         android:id="@+id/btn_create"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Crear cuenta"
+        android:text="@string/txt_user_signup"
         android:background="@drawable/btn_rounded_darkred"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toTopOf="@+id/guideline_bottom"
@@ -131,7 +131,7 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Nuevo usuario"
+        android:text="@string/txt_newuser"
         android:textColor="@android:color/white"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/guideline_top"
