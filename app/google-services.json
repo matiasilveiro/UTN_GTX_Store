@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "449884859492",
+    "firebase_url": "https://gtx-store.firebaseio.com",
+    "project_id": "gtx-store",
+    "storage_bucket": "gtx-store.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:449884859492:android:bec7dcfa988da523ab4371",
+        "android_client_info": {
+          "package_name": "com.utn.hwstore"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "449884859492-kolgonf9qde3sddq23bmojk2if4gccer.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.utn.hwstore",
+            "certificate_hash": "62598030b0c1986979752e8bc1865f703980c42c"
+          }
+        },
+        {
+          "client_id": "449884859492-ndfas2kmte0ncsg84esrbr6lo1c58lhu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsnJZz65U_-sJ5yDgKuQk7vgPP-oTp5J4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "449884859492-ndfas2kmte0ncsg84esrbr6lo1c58lhu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

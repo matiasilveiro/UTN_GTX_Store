@@ -10,32 +10,24 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.utn.hwstore.R
 import com.utn.hwstore.entities.HwItem
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 
-class HwItemAdapter(private val itemList: ArrayList<HwItem>, val onItemClick: (HwItem) -> Unit): RecyclerView.Adapter<HwItemAdapter.HwItemViewHolder>() {
+
+class HwItemAdapter(options: FirestoreRecyclerOptions<HwItem>, val onItemClick: (HwItem) -> Unit) : FirestoreRecyclerAdapter<HwItem, HwItemAdapter.HwItemViewHolder>(options) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HwItemViewHolder {
         val view =  LayoutInflater.from(parent.context).inflate(R.layout.item_list_hw,parent,false)
         return HwItemViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: HwItemViewHolder, position: Int) {
-        holder.setBrand(itemList[position].brand)
-        holder.setModel(itemList[position].model)
-        holder.setImage(itemList[position].imageURL)
+    override fun onBindViewHolder(holder: HwItemViewHolder, position: Int, model: HwItem) {
+        holder.setBrand(model.brand)
+        holder.setModel(model.model)
+        holder.setImage(model.imageURL)
         holder.getCardLayout().setOnClickListener {
-            onItemClick(itemList[position])
+            onItemClick(model)
         }
-
-        holder.getCardLayout().setOnLongClickListener {
-            itemList.removeAt(position)
-            notifyItemRemoved(position)
-            notifyItemRangeChanged(position, itemList.size)
-            return@setOnLongClickListener true
-        }
-    }
-
-    override fun getItemCount(): Int {
-        return itemList.size
     }
 
     class HwItemViewHolder (v: View) : RecyclerView.ViewHolder(v){

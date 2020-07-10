@@ -1,7 +1,9 @@
 package com.utn.hwstore.fragments
 
+import android.content.ContentValues.TAG
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -9,8 +11,10 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.firestore.FirebaseFirestore
 import com.rowland.cartcounter.view.CartCounterActionView
 
 import com.utn.hwstore.R
@@ -46,28 +50,13 @@ class HWListFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
         /*
-        itemsList.add(HwItem("ASUS","X555","Notebook","Notebook de propósitos generales","",32500.0,
-            "https://http2.mlstatic.com/asus-x555-i5-7200u-8gb-512gb-ssd-gtx-940mx-a-pedido-D_NQ_NP_377321-MLA20769175451_062016-F.jpg"))
-
-        itemsList.add(HwItem("Dell","X666","Notebook","Notebook de propósitos generales de alto rendimiento","Notebook de propósitos generales",45500.0,
-            "https://http2.mlstatic.com/notebook-dell-core-i7-8565u-8va-8gb-1tb-windows-10-156-hd-D_NQ_NP_772006-MLA32942545554_112019-F.jpg"))
-
-        itemsList.add(HwItem("HP","Omen","Notebook","Notebook gamer de la línea HP Omen","Notebook zarpada uacho",64500.0,
-            "https://http2.mlstatic.com/notebook-hp-omen-15-dc0030nr-i716gb1tb-256gbssd-D_NQ_NP_611088-MLA31637826216_072019-F.jpg"))
-
-        itemsList.add(HwItem("MSI","X888","Notebook","Notebook gamer","Notebook gamer de alto rendimiento",80500.0,
-            "https://asset.msi.com/global/picture/news/2018/nb/gaming-notebook-20180118-1.png"))
-
-        itemsList.add(HwItem("HyperX","RAM x 16GB","Memoria RAM","Memoria RAM de 16GB","Memoria RAM gamer de 16GB con luces RGB",7500.0,
-            "https://www.winpy.cl/files/w17524_hx432c16pb3a-8.jpg"))
-
-        itemsList.add(HwItem("Corsair","Vengeance","Memoria RAM","Memoria RAM de 16GB","Memoria RAM gamer de 16GB con luces RGB",7300.0,
-            "https://gamerpc.es/wp-content/uploads/2016/11/corsair-vengeance-pro-series-ddr3.jpg"))
-
         itemsList.add(HwItem("HyperX","Alloy FPS","Teclado","Teclado mecánico con pad numérico lateral","Teclado mecánico de alto rendimiento, con marco de aluminio",8800.0,
             "https://d26lpennugtm8s.cloudfront.net/stores/135/412/products/883089-mla30753761388_052019-o-5725d9d9fa57a8489b15602727520573-1024-1024.jpg"))
         */
+
+        val db = FirebaseFirestore.getInstance()
     }
 
     override fun onCreateView(
@@ -96,16 +85,16 @@ class HWListFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
+        /*
         db = productsDatabase.getAppDataBase(v.context)
         itemDao = db?.hwItemDao()
 
-        /*
         for(item in itemsList) {
             itemDao?.insertProduct(item)
         }
-        */
 
         itemsList = itemDao?.loadAllProducts() as ArrayList<HwItem>
+        */
 
         rvItemsList.setHasFixedSize(true)
 
@@ -116,13 +105,22 @@ class HWListFragment : Fragment() {
         }
         rvItemsList.layoutManager = gridLayoutManager
 
-        itemsListAdapter = HwItemAdapter(itemsList){item ->
+        val rootRef = FirebaseFirestore.getInstance()
+        val query = rootRef.collection("Products")
+            .orderBy("brand")
+
+        val options = FirestoreRecyclerOptions.Builder<HwItem>()
+            .setQuery(query, HwItem::class.java)
+            .build()
+
+        itemsListAdapter = HwItemAdapter(options){item ->
             onItemClick(item)
         }
+        itemsListAdapter.startListening()
         rvItemsList.adapter = itemsListAdapter
 
         btnAddItem.setOnClickListener {
-            val action = HWListFragmentDirections.actionHWListFragmentToNewItemFragment(HwItem("","","","","",0.0,""))
+            val action = HWListFragmentDirections.actionHWListFragmentToNewItemFragment(HwItem("","","","","",0.0,"",""))
             v.findNavController().navigate(action)
         }
     }

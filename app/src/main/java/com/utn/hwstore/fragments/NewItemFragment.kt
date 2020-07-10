@@ -95,7 +95,8 @@ class NewItemFragment : Fragment() {
                     editDescription.text.toString(),
                     editSpecs.text.toString(),
                     editPrice.text.toString().toDouble(),
-                    imgURL)
+                    imgURL,
+                "")
 
                 if(modifyProduct) {
                     itemDao?.updateProduct(newItem)

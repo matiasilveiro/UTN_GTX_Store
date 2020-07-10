@@ -7,7 +7,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "products")
-class HwItem(brand: String, model: String, type: String, description: String, details: String, price: Double, imageURL: String) : Parcelable {
+class HwItem(brand: String, model: String, type: String, description: String, details: String, price: Double, imageURL: String, uid: String) : Parcelable {
 
     @ColumnInfo(name = "brand")
     var brand: String = ""
@@ -31,6 +31,10 @@ class HwItem(brand: String, model: String, type: String, description: String, de
     @ColumnInfo(name = "imageURL")
     var imageURL: String = ""
 
+    var uid: String = ""
+
+    constructor() : this( "","","","","",0.0,"","")
+
     init {
         this.brand = brand
         this.model = model
@@ -39,6 +43,7 @@ class HwItem(brand: String, model: String, type: String, description: String, de
         this.details = details
         this.price = price
         this.imageURL = imageURL
+        this.uid = uid
     }
 
     constructor(source: Parcel) : this(
@@ -48,6 +53,7 @@ class HwItem(brand: String, model: String, type: String, description: String, de
         source.readString()!!,
         source.readString()!!,
         source.readDouble(),
+        source.readString()!!,
         source.readString()!!
     )
 
@@ -61,6 +67,7 @@ class HwItem(brand: String, model: String, type: String, description: String, de
         writeString(details)
         writeDouble(price)
         writeString(imageURL)
+        writeString(uid)
     }
 
     companion object {
