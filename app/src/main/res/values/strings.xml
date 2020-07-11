@@ -4,6 +4,9 @@
     <string name="navigation_drawer_open">Navigation drawer abierto</string>
     <string name="navigation_drawer_close">Navigation drawer cerrado</string>
 
+    <!-- Google Sign-In tokens -->
+    <string name="web_client_id">449884859492-ndfas2kmte0ncsg84esrbr6lo1c58lhu.apps.googleusercontent.com</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
