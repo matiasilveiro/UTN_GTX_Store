@@ -7,7 +7,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "users")
-class User(username: String, password: String) : Parcelable {
+class User(username: String, password: String, uid: String) : Parcelable {
     @PrimaryKey
     @ColumnInfo(name = "username")
     var username: String = username
@@ -15,7 +15,13 @@ class User(username: String, password: String) : Parcelable {
     @ColumnInfo(name = "password")
     var password: String = password
 
+    @ColumnInfo(name = "uid")
+    var uid: String = uid
+
+    constructor() : this( "","","")
+
     constructor(source: Parcel) : this(
+        source.readString()!!,
         source.readString()!!,
         source.readString()!!
     )
@@ -25,6 +31,7 @@ class User(username: String, password: String) : Parcelable {
     override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
         writeString(username)
         writeString(password)
+        writeString(uid)
     }
 
     companion object {
@@ -37,6 +44,6 @@ class User(username: String, password: String) : Parcelable {
 
     override fun equals(other: Any?): Boolean {
         val user = other as User
-        return (this.username.equals(user.username) and this.password.equals(user.password))
+        return (this.username.equals(user.username) and this.password.equals(user.password) and this.uid.equals(user.uid))
     }
 }

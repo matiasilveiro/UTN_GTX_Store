@@ -1,5 +1,6 @@
 package com.utn.hwstore.fragments
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -14,6 +15,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.firebase.firestore.FirebaseFirestore
 import com.rowland.cartcounter.view.CartCounterActionView
 
 import com.utn.hwstore.R
@@ -88,10 +90,18 @@ class DetailsFragment : Fragment() {
                 v.findNavController().navigate(action)
             }
             R.id.remove_item -> {
-                Snackbar.make(v, "Producto eliminado", Snackbar.LENGTH_SHORT).show()
+                val db = FirebaseFirestore.getInstance()
+                db.collection("Products").document(args.item.uid)
+                    .delete()
+                    .addOnSuccessListener {
+                        Snackbar.make(v, "Producto eliminado", Snackbar.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener {
+                        Snackbar.make(v, "Error al eliminar producto", Snackbar.LENGTH_SHORT).show()
+                    }
                 v.findNavController().navigateUp()
             }
-            else -> ""
+            else -> Log.d(TAG, "DetailsFragment: MenuItem not found")
         }
         return super.onOptionsItemSelected(item)
     }

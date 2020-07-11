@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.rowland.cartcounter.view.CartCounterActionView
 
@@ -34,6 +35,7 @@ class HWListFragment : Fragment() {
     private lateinit var gridLayoutManager: GridLayoutManager
 
     private lateinit var btnAddItem: FloatingActionButton
+    private lateinit var btnLogOut: FloatingActionButton
 
     private lateinit var v: View
 
@@ -65,6 +67,7 @@ class HWListFragment : Fragment() {
         rvItemsList = v.findViewById(R.id.rv_hw_items)
 
         btnAddItem = v.findViewById(R.id.btn_add_item)
+        btnLogOut = v.findViewById(R.id.btn_log_out)
 
         return v
     }
@@ -105,6 +108,12 @@ class HWListFragment : Fragment() {
         btnAddItem.setOnClickListener {
             val action = HWListFragmentDirections.actionHWListFragmentToNewItemFragment(HwItem("","","","","",0.0,"",""))
             v.findNavController().navigate(action)
+        }
+
+        btnLogOut.setOnClickListener {
+            val auth = FirebaseAuth.getInstance()
+            auth.signOut()
+            Snackbar.make(v, "Sesión cerrada", Snackbar.LENGTH_SHORT).show()
         }
     }
 

@@ -1,6 +1,8 @@
 package com.utn.hwstore.fragments
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.EditText
@@ -13,6 +15,7 @@ import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.github.nikartm.button.FitButton
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.firestore.FirebaseFirestore
 import com.rowland.cartcounter.view.CartCounterActionView
 
 import com.utn.hwstore.R
@@ -90,14 +93,36 @@ class NewItemFragment : Fragment() {
                     imgURL,
                 "")
 
+                val db = FirebaseFirestore.getInstance()
+
                 if(modifyProduct) {
-                    //itemDao?.updateProduct(newItem)
-                    Snackbar.make(v, "Producto modificado: ${newItem.brand} ${newItem.model}", Snackbar.LENGTH_SHORT).show()
+                    db.collection("Products").document(newItem.uid)
+                        .set(newItem)
+                        .addOnSuccessListener {
+                            Log.d(TAG, "DocumentSnapshot successfully updated!")
+                            Snackbar.make(v, "Producto modificado: ${newItem.brand} ${newItem.model}", Snackbar.LENGTH_SHORT).show()
+                            v.findNavController().navigateUp()
+                        }
+                        .addOnFailureListener {
+                                e -> Log.w(TAG, "Error updating document", e)
+                        }
                 } else {
-                    //itemDao?.insertProduct(newItem)
-                    Snackbar.make(v, "Producto añadido: ${newItem.brand} ${newItem.model}", Snackbar.LENGTH_SHORT).show()
+                    db.collection("Products")
+                        .add(newItem)
+                        .addOnSuccessListener { documentReference ->
+                            Log.d(TAG,"DocumentSnapshot written with ID: ${documentReference.id}")
+                            newItem.uid = documentReference.id
+                            db.collection("Products").document(documentReference.id)
+                                .set(newItem)
+                                .addOnSuccessListener {
+                                    Snackbar.make(v, "Producto añadido: ${newItem.brand} ${newItem.model}", Snackbar.LENGTH_SHORT).show()
+                                    v.findNavController().navigateUp()
+                                }
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w(TAG, "Error adding document", e)
+                        }
                 }
-                v.findNavController().navigateUp()
             } else {
                 Snackbar.make(v, "Por favor rellene todos los campos", Snackbar.LENGTH_SHORT).show()
             }

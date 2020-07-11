@@ -58,6 +58,9 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
         if (!checkPermissions()) {
             requestPermissions()
         }
+
+        val userUid = intent.getStringExtra("userUid")
+        Toast.makeText(this, "User: $userUid", Toast.LENGTH_LONG).show()
     }
 
     override fun onBackPressed() {
@@ -71,10 +74,6 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
     override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
         Toast.makeText(this, "onNavigationItemSelected", Toast.LENGTH_SHORT).show()
         when(menuItem.itemId) {
-            R.id.nav_user_settings -> Toast.makeText(this, "User settings", Toast.LENGTH_SHORT).show()
-            R.id.nav_user_logout -> Toast.makeText(this, "Cerrando sesión...", Toast.LENGTH_SHORT).show()
-            R.id.nav_add_article -> Toast.makeText(this, "Agregar artículo", Toast.LENGTH_SHORT).show()
-            R.id.nav_shopping_cart -> Toast.makeText(this, "Carrito de compras", Toast.LENGTH_SHORT).show()
             else -> Toast.makeText(this, "Not yet implemented. ID: ${menuItem.itemId}", Toast.LENGTH_SHORT).show()
         }
 
