@@ -1,12 +1,10 @@
 package com.utn.hwstore
 
 import android.Manifest
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
@@ -26,6 +24,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.navdrawer_header.*
 
 
@@ -75,6 +74,12 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
         auth = FirebaseAuth.getInstance()
         val user = auth.currentUser
         Toast.makeText(this, "User: ${user?.displayName}", Toast.LENGTH_LONG).show()
+
+        if(user?.displayName == "Matías Silveiro") {
+            subscribeToNotificationTopic("notebooks", true)
+        } else {
+            subscribeToNotificationTopic("notebooks", false)
+        }
     }
 
     override fun onStop() {
@@ -131,6 +136,32 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
                         .setPositiveButton("Ok", { dialog, which -> }).show()
                 }
             }
+        }
+    }
+
+    private fun subscribeToNotificationTopic(topic: String, subscribe: Boolean) {
+        if (subscribe) {
+            FirebaseMessaging.getInstance().subscribeToTopic(topic)
+                .addOnCompleteListener { task ->
+                    val msg = if (!task.isSuccessful) {
+                        "Subscribed failed to topic notebooks"
+                    } else {
+                        "Subscribed successfully to topic notebooks"
+                    }
+                    Log.d(ContentValues.TAG, msg)
+                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+                }
+        } else {
+            FirebaseMessaging.getInstance().unsubscribeFromTopic(topic)
+                .addOnCompleteListener { task ->
+                    val msg = if (!task.isSuccessful) {
+                        "Unsubscribed failed to topic notebooks"
+                    } else {
+                        "Unsubscribed successfully to topic notebooks"
+                    }
+                    Log.d(ContentValues.TAG, msg)
+                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+                }
         }
     }
 
