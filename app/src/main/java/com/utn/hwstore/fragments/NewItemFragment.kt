@@ -92,7 +92,7 @@ class NewItemFragment : Fragment() {
         super.onStart()
 
         val parentJob = Job()
-        val scope = CoroutineScope(Dispatchers.Default + parentJob)
+        val fbScope = CoroutineScope(Dispatchers.Main + parentJob)    // Main dispatcher para enableUI
 
 
         btnSaveProduct.setOnClickListener {
@@ -109,12 +109,16 @@ class NewItemFragment : Fragment() {
                 val db = FirebaseFirestore.getInstance()
 
                 if(modifyProduct) {
-                    scope.launch {
+                    fbScope.launch {
+                        enableUI(false)
                         updateItemInFirebase(newItem)
+                        enableUI(true)
                     }
                 } else {
-                    scope.launch {
+                    fbScope.launch {
+                        enableUI(false)
                         createItemInFirebase(newItem)
+                        enableUI(true)
                     }
                 }
             } else {
@@ -150,7 +154,7 @@ class NewItemFragment : Fragment() {
     private suspend fun createItemInFirebase(item: HwItem) {
         val db = FirebaseFirestore.getInstance()
         try {
-            item.imageURL = saveImage(imgURL)!!
+            item.imageURL = saveImage(imgURL, item.model)!!
             Log.d(TAG, "Image URL: ${item.imageURL}")
 
             val reference = db.collection("Products").add(item).await()
@@ -170,7 +174,7 @@ class NewItemFragment : Fragment() {
         val db = FirebaseFirestore.getInstance()
         try {
             if(modifyImage) {
-                item.imageURL = saveImage(imgURL)!!
+                item.imageURL = saveImage(imgURL, item.model)!!
                 Log.d(TAG, "Image URL: ${item.imageURL}")
             }
             db.collection("Products").document(item.uid).set(item).await()
@@ -183,7 +187,7 @@ class NewItemFragment : Fragment() {
         }
     }
 
-    private suspend fun saveImage(filePath: String): String? {
+    private suspend fun saveImage(filePath: String, name: String): String? {
         val storage = FirebaseStorage.getInstance()
         val storageRef = storage.reference
 
@@ -192,10 +196,20 @@ class NewItemFragment : Fragment() {
             .build()
 
         val file = Uri.fromFile(File(filePath))
-        val imageRef = storageRef.child("images/${file.lastPathSegment}")
+        val imageRef = storageRef.child("images/$name")
 
         return withContext(Dispatchers.IO) {
             imageRef.putFile(filePath.toUri(), metadata).await().storage.downloadUrl.await().toString()
+        }
+    }
+
+    private fun enableUI(enable: Boolean) {
+        if(enable) {
+            grayblur.visibility = View.INVISIBLE
+            loader.visibility = View.INVISIBLE
+        } else {
+            grayblur.visibility = View.VISIBLE
+            loader.visibility = View.VISIBLE
         }
     }
     

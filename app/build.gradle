@@ -78,6 +78,7 @@ dependencies {
 
     // Animations
     implementation 'com.rowland.cartcounter:CartCounter:1.0.0-beta-2'
+    implementation 'com.agrawalsuneet.androidlibs:dotsloader:1.4'
 
     // Room Database
     implementation "android.arch.persistence.room:runtime:1.1.1"
