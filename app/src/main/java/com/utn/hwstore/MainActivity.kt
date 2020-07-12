@@ -60,25 +60,28 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
 
         drawerLayout.addDrawerListener(this)
 
-        val header = navigationView.getHeaderView(0)
-        val headerTitle = header.findViewById<TextView>(R.id.txt_title)
-        headerTitle.text = "Usuario"
-
-        if (!checkPermissions()) {
-            requestPermissions()
-        }
-
         setupNotificationsReceiver()
         LocalBroadcastManager.getInstance(this).registerReceiver(messageReceiver, IntentFilter("MyData"))
 
         auth = FirebaseAuth.getInstance()
         val user = auth.currentUser
-        Toast.makeText(this, "User: ${user?.displayName}", Toast.LENGTH_LONG).show()
 
-        if(user?.displayName == "Matías Silveiro") {
-            subscribeToNotificationTopic("notebooks", true)
-        } else {
-            subscribeToNotificationTopic("notebooks", false)
+        user?.let {
+            Toast.makeText(this, "User: ${user.displayName}", Toast.LENGTH_LONG).show()
+
+            if (user.displayName == "Matías Silveiro") {
+                subscribeToNotificationTopic("notebooks", true)
+            } else {
+                subscribeToNotificationTopic("notebooks", false)
+            }
+
+            val header = navigationView.getHeaderView(0)
+            val headerTitle = header.findViewById<TextView>(R.id.txt_title)
+            headerTitle.text = user.displayName
+        }
+
+        if (!checkPermissions()) {
+            requestPermissions()
         }
     }
 

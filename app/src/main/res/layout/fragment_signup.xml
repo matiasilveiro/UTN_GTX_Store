@@ -27,7 +27,8 @@
             android:layout_height="wrap_content"
             android:textColorHint="@android:color/white"
             android:textColor="@android:color/white"
-            android:hint="@string/txt_newuser_username" />
+            android:hint="@string/txt_newuser_username"
+            android:inputType="textEmailAddress"/>
     </ss.anoop.awesometextinputlayout.AwesomeTextInputLayout>
 
     <ss.anoop.awesometextinputlayout.AwesomeTextInputLayout

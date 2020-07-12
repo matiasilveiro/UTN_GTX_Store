@@ -1,6 +1,7 @@
 package com.utn.hwstore.fragments
 
 import android.content.ContentValues.TAG
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
@@ -17,6 +18,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.rowland.cartcounter.view.CartCounterActionView
+import com.utn.hwstore.LoginActivity
+import com.utn.hwstore.MainActivity
 
 import com.utn.hwstore.R
 import com.utn.hwstore.adapters.HwItemAdapter
@@ -114,6 +117,10 @@ class HWListFragment : Fragment() {
             val auth = FirebaseAuth.getInstance()
             auth.signOut()
             Snackbar.make(v, "Sesión cerrada", Snackbar.LENGTH_SHORT).show()
+
+            val intent = Intent(context, LoginActivity::class.java)
+            startActivity(intent)
+            activity?.finish()
         }
     }
 

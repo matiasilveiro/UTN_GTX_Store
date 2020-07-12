@@ -60,6 +60,9 @@ class LoginFragment : Fragment() {
         txtError = v.findViewById(R.id.txt_errormsg)
         txtRememberPassword = v.findViewById(R.id.txt_remember_password)
 
+        edtUsername.setText("demo@app.com")
+        edtPassword.setText("demoapp")
+
         btnSignup = v.findViewById(R.id.btn_signup)
         btnLogin = v.findViewById(R.id.btn_login)
         //btnDebug = v.findViewById(R.id.btn_debug)
@@ -109,7 +112,6 @@ class LoginFragment : Fragment() {
                             Log.d(TAG, "signInWithEmail:success - user:${user?.email}")
 
                             val intent = Intent(context, MainActivity::class.java)
-                            intent.putExtra("userUid","matias")
                             startActivity(intent)
                             activity?.finish()
                             /*
