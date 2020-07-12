@@ -1,6 +1,7 @@
 package com.utn.hwstore.fragments
 
 import android.content.ContentValues.TAG
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -9,6 +10,7 @@ import android.widget.EditText
 import android.widget.Button
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
@@ -16,12 +18,18 @@ import com.bumptech.glide.Glide
 import com.github.nikartm.button.FitButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageMetadata
 import com.rowland.cartcounter.view.CartCounterActionView
 
 import com.utn.hwstore.R
 import com.utn.hwstore.entities.HwItem
 import gun0912.tedbottompicker.TedBottomPicker
 import kotlinx.android.synthetic.main.fragment_new_item.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.tasks.await
+import java.io.File
 
 /**
  * A simple [Fragment] subclass.
@@ -43,6 +51,7 @@ class NewItemFragment : Fragment() {
     private val args: NewItemFragmentArgs by navArgs()
     private lateinit var viewModelDetails: DetailsViewModel
     private var modifyProduct: Boolean = false
+    private var modifyImage: Boolean = false
 
     private lateinit var v: View
 
@@ -82,6 +91,10 @@ class NewItemFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
+        val parentJob = Job()
+        val scope = CoroutineScope(Dispatchers.Default + parentJob)
+
+
         btnSaveProduct.setOnClickListener {
             if(isDataCompleted()) {
                 val newItem = HwItem(editBrand.text.toString(),
@@ -96,32 +109,13 @@ class NewItemFragment : Fragment() {
                 val db = FirebaseFirestore.getInstance()
 
                 if(modifyProduct) {
-                    db.collection("Products").document(newItem.uid)
-                        .set(newItem)
-                        .addOnSuccessListener {
-                            Log.d(TAG, "DocumentSnapshot successfully updated!")
-                            Snackbar.make(v, "Producto modificado: ${newItem.brand} ${newItem.model}", Snackbar.LENGTH_SHORT).show()
-                            v.findNavController().navigateUp()
-                        }
-                        .addOnFailureListener {
-                                e -> Log.w(TAG, "Error updating document", e)
-                        }
+                    scope.launch {
+                        updateItemInFirebase(newItem)
+                    }
                 } else {
-                    db.collection("Products")
-                        .add(newItem)
-                        .addOnSuccessListener { documentReference ->
-                            Log.d(TAG,"DocumentSnapshot written with ID: ${documentReference.id}")
-                            newItem.uid = documentReference.id
-                            db.collection("Products").document(documentReference.id)
-                                .set(newItem)
-                                .addOnSuccessListener {
-                                    Snackbar.make(v, "Producto añadido: ${newItem.brand} ${newItem.model}", Snackbar.LENGTH_SHORT).show()
-                                    v.findNavController().navigateUp()
-                                }
-                        }
-                        .addOnFailureListener { e ->
-                            Log.w(TAG, "Error adding document", e)
-                        }
+                    scope.launch {
+                        createItemInFirebase(newItem)
+                    }
                 }
             } else {
                 Snackbar.make(v, "Por favor rellene todos los campos", Snackbar.LENGTH_SHORT).show()
@@ -142,6 +136,8 @@ class NewItemFragment : Fragment() {
                         .centerCrop()
                         .into(imgItem)
                     imgURL = uri.toString()
+
+                    modifyImage = true
                 }
         }
     }
@@ -149,6 +145,58 @@ class NewItemFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModelDetails = ViewModelProvider(requireActivity()).get(DetailsViewModel::class.java)
+    }
+
+    private suspend fun createItemInFirebase(item: HwItem) {
+        val db = FirebaseFirestore.getInstance()
+        try {
+            item.imageURL = saveImage(imgURL)!!
+            Log.d(TAG, "Image URL: ${item.imageURL}")
+
+            val reference = db.collection("Products").add(item).await()
+
+            item.uid = reference.id
+            db.collection("Products").document(reference.id).set(item).await()
+
+            Snackbar.make(v, "Producto añadido: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+            v.findNavController().navigateUp()
+
+        } catch (e: FirebaseFirestoreException) {
+            Snackbar.make(v, "Error añadiendo producto: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+        }
+    }
+
+    private suspend fun updateItemInFirebase(item: HwItem) {
+        val db = FirebaseFirestore.getInstance()
+        try {
+            if(modifyImage) {
+                item.imageURL = saveImage(imgURL)!!
+                Log.d(TAG, "Image URL: ${item.imageURL}")
+            }
+            db.collection("Products").document(item.uid).set(item).await()
+
+            Snackbar.make(v, "Producto modificado: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+            v.findNavController().navigateUp()
+            
+        } catch (e: FirebaseFirestoreException) {
+            Snackbar.make(v, "Error modificando producto: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+        }
+    }
+
+    private suspend fun saveImage(filePath: String): String? {
+        val storage = FirebaseStorage.getInstance()
+        val storageRef = storage.reference
+
+        val metadata = StorageMetadata.Builder()
+            .setContentType("image/jpeg")
+            .build()
+
+        val file = Uri.fromFile(File(filePath))
+        val imageRef = storageRef.child("images/${file.lastPathSegment}")
+
+        return withContext(Dispatchers.IO) {
+            imageRef.putFile(filePath.toUri(), metadata).await().storage.downloadUrl.await().toString()
+        }
     }
     
     private fun isDataCompleted(): Boolean {
