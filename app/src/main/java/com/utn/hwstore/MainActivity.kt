@@ -1,6 +1,10 @@
 package com.utn.hwstore
 
 import android.Manifest
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.MenuItem
@@ -8,17 +12,20 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.get
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.navdrawer_header.*
 
 
@@ -26,6 +33,9 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
     DrawerLayout.DrawerListener {
 
     private lateinit var drawerLayout: DrawerLayout
+    private lateinit var auth: FirebaseAuth
+
+    private lateinit var messageReceiver: BroadcastReceiver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,8 +69,18 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
             requestPermissions()
         }
 
-        val userUid = intent.getStringExtra("userUid")
-        Toast.makeText(this, "User: $userUid", Toast.LENGTH_LONG).show()
+        setupNotificationsReceiver()
+        LocalBroadcastManager.getInstance(this).registerReceiver(messageReceiver, IntentFilter("MyData"))
+
+        auth = FirebaseAuth.getInstance()
+        val user = auth.currentUser
+        Toast.makeText(this, "User: ${user?.displayName}", Toast.LENGTH_LONG).show()
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(messageReceiver)
     }
 
     override fun onBackPressed() {
@@ -98,6 +118,21 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
         //TODO("Not yet implemented")
     }
 
+    private fun setupNotificationsReceiver() {
+        messageReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent) {
+                val title = intent.extras?.getString("title")
+                val message = intent.extras?.getString("message")
+
+                if(!message.isNullOrEmpty()) {
+                    AlertDialog.Builder(this@MainActivity)
+                        .setTitle(title)
+                        .setMessage(message)
+                        .setPositiveButton("Ok", { dialog, which -> }).show()
+                }
+            }
+        }
+    }
 
     private fun checkPermissions(): Boolean {
         var permissionState = 0
