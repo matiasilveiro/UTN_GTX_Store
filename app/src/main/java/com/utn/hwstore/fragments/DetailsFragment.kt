@@ -1,9 +1,11 @@
 package com.utn.hwstore.fragments
 
 import android.content.ContentValues.TAG
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
@@ -16,10 +18,16 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageMetadata
 import com.rowland.cartcounter.view.CartCounterActionView
 
 import com.utn.hwstore.R
 import com.utn.hwstore.entities.HwItem
+import kotlinx.coroutines.*
+import kotlinx.coroutines.tasks.await
+import java.io.File
 
 class DetailsFragment : Fragment() {
 
@@ -90,16 +98,12 @@ class DetailsFragment : Fragment() {
                 v.findNavController().navigate(action)
             }
             R.id.remove_item -> {
-                val db = FirebaseFirestore.getInstance()
-                db.collection("Products").document(args.item.uid)
-                    .delete()
-                    .addOnSuccessListener {
-                        Snackbar.make(v, "Producto eliminado", Snackbar.LENGTH_SHORT).show()
-                    }
-                    .addOnFailureListener {
-                        Snackbar.make(v, "Error al eliminar producto", Snackbar.LENGTH_SHORT).show()
-                    }
-                v.findNavController().navigateUp()
+                val parentJob = Job()
+                val fbScope = CoroutineScope(Dispatchers.Default + parentJob)
+                fbScope.launch {
+                    deleteItemFromFirebase(args.item)
+                    v.findNavController().navigateUp()
+                }
             }
             else -> Log.d(TAG, "DetailsFragment: MenuItem not found")
         }
@@ -134,6 +138,20 @@ class DetailsFragment : Fragment() {
                     actionView.count = viewModelShoppingCart.cart.size
                     Snackbar.make(v, "Eliminado del carrito", Snackbar.LENGTH_SHORT).show()
                 }.show()
+        }
+    }
+
+    private suspend fun deleteItemFromFirebase(item: HwItem) {
+        try {
+            val storageRef = FirebaseStorage.getInstance().reference
+            storageRef.child("images/${item.model}").delete().await()
+
+            val db = FirebaseFirestore.getInstance()
+            db.collection("Products").document(item.uid).delete().await()
+
+            Snackbar.make(v, "Producto eliminado: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+        } catch (e: FirebaseFirestoreException) {
+            Snackbar.make(v, "Error eliminando producto: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
         }
     }
 
