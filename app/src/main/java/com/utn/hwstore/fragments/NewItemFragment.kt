@@ -20,6 +20,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageException
 import com.google.firebase.storage.StorageMetadata
 import com.rowland.cartcounter.view.CartCounterActionView
 
@@ -165,8 +166,17 @@ class NewItemFragment : Fragment() {
             Snackbar.make(v, "Producto añadido: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
             v.findNavController().navigateUp()
 
-        } catch (e: FirebaseFirestoreException) {
-            Snackbar.make(v, "Error añadiendo producto: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            when(e) {
+                is FirebaseFirestoreException -> {
+                    Log.d(TAG, "FirestoreException: $e")
+                    Snackbar.make(v, "Error añadiendo producto: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+                }
+                is StorageException -> {
+                    Log.d(TAG, "StorageException: $e")
+                    Snackbar.make(v, "Error subiendo imagen: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
@@ -182,8 +192,17 @@ class NewItemFragment : Fragment() {
             Snackbar.make(v, "Producto modificado: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
             v.findNavController().navigateUp()
             
-        } catch (e: FirebaseFirestoreException) {
-            Snackbar.make(v, "Error modificando producto: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            when(e) {
+                is FirebaseFirestoreException -> {
+                    Log.d(TAG, "FirestoreException: $e")
+                    Snackbar.make(v, "Error modificando producto: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+                }
+                is StorageException -> {
+                    Log.d(TAG, "StorageException: $e")
+                    Snackbar.make(v, "Error subiendo imagen: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 

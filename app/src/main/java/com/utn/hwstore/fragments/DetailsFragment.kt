@@ -20,6 +20,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageException
 import com.google.firebase.storage.StorageMetadata
 import com.rowland.cartcounter.view.CartCounterActionView
 
@@ -150,8 +151,17 @@ class DetailsFragment : Fragment() {
             db.collection("Products").document(item.uid).delete().await()
 
             Snackbar.make(v, "Producto eliminado: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
-        } catch (e: FirebaseFirestoreException) {
-            Snackbar.make(v, "Error eliminando producto: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            when(e) {
+                is FirebaseFirestoreException -> {
+                    Log.d(TAG, "FirestoreException: $e")
+                    Snackbar.make(v, "Error eliminando producto: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+                }
+                is StorageException -> {
+                    Log.d(TAG, "StorageException: $e")
+                    Snackbar.make(v, "Error eliminando imagen: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
