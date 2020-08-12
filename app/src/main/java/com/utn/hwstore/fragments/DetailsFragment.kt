@@ -8,6 +8,7 @@ import android.view.*
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
@@ -36,8 +37,8 @@ class DetailsFragment : Fragment() {
         fun newInstance() = DetailsFragment()
     }
 
-    private lateinit var viewModel: DetailsViewModel
-    private lateinit var viewModelShoppingCart: ShoppingCartViewModel
+    private val viewModel: DetailsViewModel  by activityViewModels()
+    private val viewModelShoppingCart: ShoppingCartViewModel  by activityViewModels()
 
     private lateinit var v: View
     private lateinit var viewPager: ViewPager2
@@ -69,8 +70,8 @@ class DetailsFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        viewModel = ViewModelProvider(requireActivity()).get(DetailsViewModel::class.java)
-        viewModelShoppingCart = ViewModelProvider(requireActivity()).get(ShoppingCartViewModel::class.java)
+        //viewModel = ViewModelProvider(requireActivity()).get(DetailsViewModel::class.java)
+        //viewModelShoppingCart = ViewModelProvider(requireActivity()).get(ShoppingCartViewModel::class.java)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

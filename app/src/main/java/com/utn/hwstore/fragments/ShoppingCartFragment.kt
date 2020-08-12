@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -27,7 +28,7 @@ class ShoppingCartFragment : Fragment() {
         fun newInstance() = ShoppingCartFragment()
     }
 
-    private lateinit var viewModel: ShoppingCartViewModel
+    private val viewModel: ShoppingCartViewModel by activityViewModels()
 
     private lateinit var rvShoppingCart: RecyclerView
     private lateinit var itemsListAdapter: HwItemCartAdapter
@@ -56,7 +57,7 @@ class ShoppingCartFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(requireActivity()).get(ShoppingCartViewModel::class.java)
+        //viewModel = ViewModelProvider(requireActivity()).get(ShoppingCartViewModel::class.java)
 
         viewModel.subtotal.observe(viewLifecycleOwner, Observer { result ->
             val btnText = "Comprar carrito ($${result.toString()})"

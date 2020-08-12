@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -31,7 +32,7 @@ class HWListFragment : Fragment() {
         fun newInstance() = HWListFragment()
     }
 
-    private lateinit var viewModel: HWListViewModel
+    private val viewModel: HWListViewModel  by activityViewModels()
 
     private lateinit var rvItemsList: RecyclerView
     private lateinit var itemsListAdapter: HwItemAdapter
@@ -44,8 +45,8 @@ class HWListFragment : Fragment() {
 
     private var itemsList: ArrayList<HwItem> = ArrayList()
 
-    private lateinit var viewModelDetails: DetailsViewModel
-    private lateinit var viewModelShoppingCart: ShoppingCartViewModel
+    private val viewModelDetails: DetailsViewModel  by activityViewModels()
+    private val viewModelShoppingCart: ShoppingCartViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,9 +78,9 @@ class HWListFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(requireActivity()).get(HWListViewModel::class.java)
-        viewModelDetails = ViewModelProvider(requireActivity()).get(DetailsViewModel::class.java)
-        viewModelShoppingCart = ViewModelProvider(requireActivity()).get(ShoppingCartViewModel::class.java)
+        //viewModel = ViewModelProvider(requireActivity()).get(HWListViewModel::class.java)
+        //viewModelDetails = ViewModelProvider(requireActivity()).get(DetailsViewModel::class.java)
+        //viewModelShoppingCart = ViewModelProvider(requireActivity()).get(ShoppingCartViewModel::class.java)
     }
 
     override fun onStart() {
