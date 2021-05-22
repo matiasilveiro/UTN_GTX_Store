@@ -5,11 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-
-import com.utn.hwstore.R
+import com.utn.hwstore.databinding.FragmentDetails2Binding
+import com.utn.hwstore.viewmodels.Details2ViewModel
+import com.utn.hwstore.viewmodels.DetailsViewModel
 
 class Details2Fragment : Fragment() {
 
@@ -17,31 +17,26 @@ class Details2Fragment : Fragment() {
         fun newInstance() = Details2Fragment()
     }
 
-    private lateinit var viewModel: Details2ViewModel
-    private lateinit var viewModelDetails: DetailsViewModel
+    private var _binding: FragmentDetails2Binding? = null
+    private val binding get() = _binding!!
 
-    private lateinit var txtSpecs: TextView
-    private lateinit var v: View
+    private val viewModel: Details2ViewModel by activityViewModels()
+    private val viewModelDetails: DetailsViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        v = inflater.inflate(R.layout.fragment_details2, container, false)
+        _binding = FragmentDetails2Binding.inflate(inflater, container, false)
 
-        txtSpecs = v.findViewById(R.id.txt_specs)
-
-        return v
+        return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(requireActivity()).get(Details2ViewModel::class.java)
-        viewModelDetails = ViewModelProvider(requireActivity()).get(DetailsViewModel::class.java)
 
         viewModelDetails.item.observe(viewLifecycleOwner, Observer { result ->
-            txtSpecs.text = result.details
+            binding.txtSpecs.text = result.details
         })
     }
-
 }

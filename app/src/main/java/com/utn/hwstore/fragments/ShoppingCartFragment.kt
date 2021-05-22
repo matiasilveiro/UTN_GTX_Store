@@ -1,26 +1,18 @@
 package com.utn.hwstore.fragments
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.LinearLayout
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-
-import com.utn.hwstore.R
-import com.utn.hwstore.adapters.HwItemAdapter
 import com.utn.hwstore.adapters.HwItemCartAdapter
+import com.utn.hwstore.databinding.FragmentShoppingCartBinding
 import com.utn.hwstore.entities.HwItem
+import com.utn.hwstore.viewmodels.ShoppingCartViewModel
 
 class ShoppingCartFragment : Fragment() {
 
@@ -28,13 +20,10 @@ class ShoppingCartFragment : Fragment() {
         fun newInstance() = ShoppingCartFragment()
     }
 
+    private var _binding: FragmentShoppingCartBinding? = null
+    private val binding get() = _binding!!
+
     private val viewModel: ShoppingCartViewModel by activityViewModels()
-
-    private lateinit var rvShoppingCart: RecyclerView
-    private lateinit var itemsListAdapter: HwItemCartAdapter
-    private lateinit var linearLayoutManager: LinearLayoutManager
-
-    private lateinit var btnCheckout: Button
 
     private var itemsList: ArrayList<HwItem> = ArrayList()
 
@@ -44,24 +33,19 @@ class ShoppingCartFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        v = inflater.inflate(R.layout.fragment_shopping_cart, container, false)
+        _binding = FragmentShoppingCartBinding.inflate(inflater, container, false)
 
         activity?.title = "Carrito de compras"
 
-        rvShoppingCart = v.findViewById(R.id.rv_shopping_cart)
-
-        btnCheckout = v.findViewById(R.id.btn_checkout)
-
-        return v
+        return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        //viewModel = ViewModelProvider(requireActivity()).get(ShoppingCartViewModel::class.java)
 
         viewModel.subtotal.observe(viewLifecycleOwner, Observer { result ->
             val btnText = "Comprar carrito ($${result.toString()})"
-            btnCheckout.text = btnText
+            binding.btnCheckout.text = btnText
         })
     }
 
@@ -69,17 +53,17 @@ class ShoppingCartFragment : Fragment() {
         super.onStart()
 
         itemsList = viewModel.cart
-
-        rvShoppingCart.setHasFixedSize(true)
-        linearLayoutManager = LinearLayoutManager(context)
-        rvShoppingCart.layoutManager = linearLayoutManager
-
-        itemsListAdapter = HwItemCartAdapter(viewModel.cart){item ->
+        val itemsListAdapter = HwItemCartAdapter(viewModel.cart){item ->
             onItemClick(item)
         }
-        rvShoppingCart.adapter = itemsListAdapter
 
-        btnCheckout.setOnClickListener {
+        with(binding.rvShoppingCart) {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(context)
+            adapter = itemsListAdapter
+        }
+
+        binding.btnCheckout.setOnClickListener {
             Snackbar.make(v, "Proximamente...",Snackbar.LENGTH_SHORT).show()
         }
     }

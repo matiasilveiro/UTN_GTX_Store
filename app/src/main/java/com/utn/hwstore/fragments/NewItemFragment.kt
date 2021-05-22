@@ -6,51 +6,35 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
-import android.widget.EditText
-import android.widget.Button
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
-import com.github.nikartm.button.FitButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageException
 import com.google.firebase.storage.StorageMetadata
-import com.rowland.cartcounter.view.CartCounterActionView
-
-import com.utn.hwstore.R
+import com.utn.hwstore.databinding.FragmentNewItemBinding
 import com.utn.hwstore.entities.HwItem
+import com.utn.hwstore.viewmodels.DetailsViewModel
 import gun0912.tedbottompicker.TedBottomPicker
 import kotlinx.android.synthetic.main.fragment_new_item.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
 import java.io.File
 
-/**
- * A simple [Fragment] subclass.
- */
 class NewItemFragment : Fragment() {
 
-    private lateinit var editBrand: EditText
-    private lateinit var editModel: EditText
-    private lateinit var editDescription: EditText
-    private lateinit var editSpecs: EditText
-    private lateinit var editPrice: EditText
-
-    private lateinit var btnSaveProduct: Button
-    private lateinit var btnPickImage: Button
-
-    private lateinit var imgItem: ImageView
+    private var _binding: FragmentNewItemBinding? = null
+    private val binding get() = _binding!!
     private var imgURL: String = ""
 
     private val args: NewItemFragmentArgs by navArgs()
-    private lateinit var viewModelDetails: DetailsViewModel
+    private val viewModelDetails: DetailsViewModel by activityViewModels()
     private var modifyProduct: Boolean = false
     private var modifyImage: Boolean = false
 
@@ -61,32 +45,20 @@ class NewItemFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        v = inflater.inflate(R.layout.fragment_new_item, container, false)
+        _binding = FragmentNewItemBinding.inflate(inflater, container, false)
 
         setHasOptionsMenu(true)
-
-        editBrand = v.findViewById(R.id.edt_brand)
-        editModel = v.findViewById(R.id.edt_model)
-        editDescription = v.findViewById(R.id.edt_description)
-        editSpecs = v.findViewById(R.id.edt_specs)
-        editPrice = v.findViewById(R.id.edt_price)
-
-        imgItem = v.findViewById(R.id.img_new_item)
-        imgItem.visibility = View.GONE
-
-        btnSaveProduct = v.findViewById(R.id.btn_save_product)
-        btnPickImage = v.findViewById(R.id.btn_choose_image)
 
         if(args.item.brand.isNotBlank()) {
             fillDataFields(args.item)
             modifyProduct = true
             activity?.title = "Editar producto"
-            btnSaveProduct.text = "Modificar producto"
+            binding.btnSaveProduct.text = "Modificar producto"
         } else {
             activity?.title = "Nuevo producto"
         }
 
-        return v
+        return binding.root
     }
 
     override fun onStart() {
@@ -96,18 +68,17 @@ class NewItemFragment : Fragment() {
         val fbScope = CoroutineScope(Dispatchers.Main + parentJob)    // Main dispatcher para enableUI
 
 
-        btnSaveProduct.setOnClickListener {
+        binding.btnSaveProduct.setOnClickListener {
             if(isDataCompleted()) {
-                val newItem = HwItem(editBrand.text.toString(),
-                    editModel.text.toString(),
+                val newItem = HwItem(
+                    binding.edtBrand.text.toString(),
+                    binding.edtModel.text.toString(),
                     "Notebook",
-                    editDescription.text.toString(),
-                    editSpecs.text.toString(),
-                    editPrice.text.toString().toDouble(),
+                    binding.edtDescription.text.toString(),
+                    binding.edtSpecs.text.toString(),
+                    binding.edtPrice.text.toString().toDouble(),
                     imgURL,
                 "")
-
-                val db = FirebaseFirestore.getInstance()
 
                 if(modifyProduct) {
                     fbScope.launch {
@@ -127,7 +98,7 @@ class NewItemFragment : Fragment() {
             }
         }
 
-        btnPickImage.setOnClickListener {
+        binding.btnChooseImage.setOnClickListener {
             TedBottomPicker.with(activity as AppCompatActivity)
                 .showCameraTile(false)
                 .showTitle(false)
@@ -135,21 +106,16 @@ class NewItemFragment : Fragment() {
                 .setEmptySelectionText("No Select")
                 .show { uri->
                     //Snackbar.make(v,"Image selected: $uri",Snackbar.LENGTH_SHORT).show()
-                    imgItem.visibility = View.VISIBLE
+                    binding.imgNewItem.visibility = View.VISIBLE
                     Glide.with(v)
                         .load(uri)
                         .centerCrop()
-                        .into(imgItem)
+                        .into(binding.imgNewItem)
                     imgURL = uri.toString()
 
                     modifyImage = true
                 }
         }
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModelDetails = ViewModelProvider(requireActivity()).get(DetailsViewModel::class.java)
     }
 
     private suspend fun createItemInFirebase(item: HwItem) {
@@ -234,27 +200,27 @@ class NewItemFragment : Fragment() {
     
     private fun isDataCompleted(): Boolean {
         return(
-                editBrand.text.isNotBlank() and
-                editModel.text.isNotBlank() and
-                editDescription.text.isNotBlank() and
-                editSpecs.text.isNotBlank() and
-                editPrice.text.isNotBlank() and
+                binding.edtBrand.text.isNotBlank() and
+                binding.edtModel.text.isNotBlank() and
+                binding.edtDescription.text.isNotBlank() and
+                binding.edtSpecs.text.isNotBlank() and
+                binding.edtPrice.text.isNotBlank() and
                 imgURL.isNotBlank()
                 )
     }
 
     private fun fillDataFields(item: HwItem) {
-        editBrand.setText(item.brand)
-        editModel.setText(item.model)
-        editDescription.setText(item.description)
-        editSpecs.setText(item.details)
-        editPrice.setText(item.price.toString())
+        binding.edtBrand.setText(item.brand)
+        binding.edtModel.setText(item.model)
+        binding.edtDescription.setText(item.description)
+        binding.edtSpecs.setText(item.details)
+        binding.edtPrice.setText(item.price.toString())
         imgURL = item.imageURL
 
-        imgItem.visibility = View.VISIBLE
+        binding.imgNewItem.visibility = View.VISIBLE
         Glide.with(v)
             .load(imgURL)
             .centerCrop()
-            .into(imgItem)
+            .into(binding.imgNewItem)
     }
 }

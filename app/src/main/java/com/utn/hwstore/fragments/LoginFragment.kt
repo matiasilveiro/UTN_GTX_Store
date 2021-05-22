@@ -8,69 +8,35 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.utn.hwstore.MainActivity
 
 import com.utn.hwstore.R
-import com.utn.hwstore.entities.User
-import com.wajahatkarim3.roomexplorer.RoomExplorer
+import com.utn.hwstore.databinding.FragmentLoginBinding
 
-/**
- * A simple [Fragment] subclass.
- */
 class LoginFragment : Fragment() {
 
     private val RC_SIGN_IN = 42
 
-    private lateinit var btnDebug: Button
-    private lateinit var btnLogin: Button
-    private lateinit var btnSignup: TextView
-    private lateinit var btnGoogleSignIn: SignInButton
+    private var _binding: FragmentLoginBinding? = null
+    private val binding get() = _binding!!
 
-    private lateinit var edtUsername: EditText
-    private lateinit var edtPassword: EditText
-    private lateinit var txtError: TextView
-    private lateinit var txtRememberPassword: TextView
-
-    private lateinit var auth: FirebaseAuth
-
-    private lateinit var v: View
+    private val auth = FirebaseAuth.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        v = inflater.inflate(R.layout.fragment_login, container, false)
+        _binding = FragmentLoginBinding.inflate(inflater, container, false)
 
-        edtUsername = v.findViewById(R.id.edt_username)
-        edtPassword = v.findViewById(R.id.edt_password)
-        txtError = v.findViewById(R.id.txt_errormsg)
-        txtRememberPassword = v.findViewById(R.id.txt_remember_password)
-
-        edtUsername.setText("demo@app.com")
-        edtPassword.setText("demoapp")
-
-        btnSignup = v.findViewById(R.id.btn_signup)
-        btnLogin = v.findViewById(R.id.btn_login)
-        //btnDebug = v.findViewById(R.id.btn_debug)
-        btnGoogleSignIn = v.findViewById(R.id.btn_google_signin)
-
-        auth = FirebaseAuth.getInstance()
-
-        return v
+        return binding.root
     }
 
     override fun onStart() {
@@ -85,12 +51,12 @@ class LoginFragment : Fragment() {
             activity?.finish()
         }
 
-        btnSignup.setOnClickListener {
+        binding.btnSignup.setOnClickListener {
             val action = LoginFragmentDirections.actionLoginFragmentToSignupFragment()
-            v.findNavController().navigate(action)
+            findNavController().navigate(action)
         }
 
-        btnGoogleSignIn.setOnClickListener {
+        binding.btnGoogleSignin.setOnClickListener {
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.web_client_id))
                 .requestEmail()
@@ -100,10 +66,10 @@ class LoginFragment : Fragment() {
             startActivityForResult(signInIntent, RC_SIGN_IN)
         }
 
-        btnLogin.setOnClickListener {
-            if(edtUsername.text.isNotBlank() and edtPassword.text.isNotBlank()) {
-                val username = edtUsername.text.toString()
-                val password = edtPassword.text.toString()
+        binding.btnLogin.setOnClickListener {
+            if(binding.edtUsername.text.isNotBlank() and binding.edtPassword.text.isNotBlank()) {
+                val username = binding.edtUsername.text.toString()
+                val password = binding.edtPassword.text.toString()
 
                 auth.signInWithEmailAndPassword(username, password)
                     .addOnCompleteListener { task ->
@@ -121,23 +87,23 @@ class LoginFragment : Fragment() {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.exception)
-                            Snackbar.make(v, "Authentication failed.", Snackbar.LENGTH_SHORT).show()
-                            txtError.text = getString(R.string.msg_user_input_error)
+                            Snackbar.make(binding.root, "Authentication failed.", Snackbar.LENGTH_SHORT).show()
+                            binding.txtErrormsg.text = getString(R.string.msg_user_input_error)
                         }
                     }
             } else {
-                txtError.text = getString(R.string.msg_user_input_incomplete)
+                binding.txtErrormsg.text = getString(R.string.msg_user_input_incomplete)
             }
         }
 
         /*
-        btnDebug.setOnClickListener {
+        binding.btnDebug.setOnClickListener {
             RoomExplorer.show(context, usersDatabase::class.java, "myDB")
         }
          */
 
-        txtRememberPassword.setOnClickListener {
-            Snackbar.make(v, "Jodete", Snackbar.LENGTH_LONG).show()
+        binding.txtRememberPassword.setOnClickListener {
+            Snackbar.make(binding.root, "Jodete", Snackbar.LENGTH_LONG).show()
         }
 
     }
@@ -178,10 +144,8 @@ class LoginFragment : Fragment() {
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithCredential:failure", task.exception)
-                    Snackbar.make(v, "Authentication Failed.", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(binding.root, "Authentication Failed.", Snackbar.LENGTH_SHORT).show()
                 }
             }
     }
-
-
 }

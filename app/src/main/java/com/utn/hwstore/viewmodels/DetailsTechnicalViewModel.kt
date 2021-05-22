@@ -1,4 +1,4 @@
-package com.utn.hwstore.fragments
+package com.utn.hwstore.viewmodels
 
 import androidx.lifecycle.ViewModel
 

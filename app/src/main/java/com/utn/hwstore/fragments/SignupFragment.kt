@@ -12,55 +12,38 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
-
 import com.utn.hwstore.R
-import com.utn.hwstore.entities.User
+import com.utn.hwstore.databinding.FragmentSignupBinding
 
-/**
- * A simple [Fragment] subclass.
- */
 class SignupFragment : Fragment() {
 
-    private lateinit var btnCreate: Button
-    private lateinit var edtUsername: EditText
-    private lateinit var edtPassword: EditText
-    private lateinit var edtPasswordCheck: EditText
-    private lateinit var txtError: TextView
+    private val auth = FirebaseAuth.getInstance()
 
-    private lateinit var auth: FirebaseAuth
-
-    private lateinit var v: View
+    private var _binding: FragmentSignupBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        v = inflater.inflate(R.layout.fragment_signup, container, false)
+        _binding = FragmentSignupBinding.inflate(inflater, container, false)
 
-        edtUsername = v.findViewById(R.id.edt_username)
-        edtPassword = v.findViewById(R.id.edt_password)
-        edtPasswordCheck = v.findViewById(R.id.edt_password_check)
-        txtError = v.findViewById(R.id.txt_errormsg)
-
-        btnCreate = v.findViewById(R.id.btn_create)
-
-        auth = FirebaseAuth.getInstance()
-
-        return v
+        return binding.root
     }
 
     override fun onStart() {
         super.onStart()
 
-        btnCreate.setOnClickListener {
-            if(edtUsername.text.isNotBlank() and edtPassword.text.isNotBlank()) {
-                val username = edtUsername.text.toString()
-                val password = edtPassword.text.toString()
-                val passwordCheck = edtPasswordCheck.text.toString()
+        binding.btnCreate.setOnClickListener {
+            if(binding.edtUsername.text.isNotBlank() and binding.edtPassword.text.isNotBlank()) {
+                val username = binding.edtUsername.text.toString()
+                val password = binding.edtPassword.text.toString()
+                val passwordCheck = binding.edtPasswordCheck.text.toString()
 
                 if(password == passwordCheck) {
                     auth.createUserWithEmailAndPassword(username, password)
@@ -84,16 +67,16 @@ class SignupFragment : Fragment() {
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                                Snackbar.make(v, "Authentication failed.", Snackbar.LENGTH_SHORT).show()
+                                Snackbar.make(binding.root, "Authentication failed.", Snackbar.LENGTH_SHORT).show()
                             }
                         }
 
-                    v.findNavController().navigateUp()
+                    findNavController().navigateUp()
                 } else {
-                    txtError.text = getString(R.string.msg_mismatch_passwords)
+                    binding.txtErrormsg.text = getString(R.string.msg_mismatch_passwords)
                 }
             } else {
-                txtError.text = getString(R.string.msg_user_input_incomplete)
+                binding.txtErrormsg.text = getString(R.string.msg_user_input_incomplete)
             }
         }
     }

@@ -1,20 +1,18 @@
 package com.utn.hwstore.fragments
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
-
-import com.utn.hwstore.R
-import com.utn.hwstore.adapters.HwItemAdapter
 import com.utn.hwstore.adapters.ReviewListAdapter
+import com.utn.hwstore.databinding.FragmentDetailsReviewsBinding
 import com.utn.hwstore.entities.Review
+import com.utn.hwstore.viewmodels.DetailsReviewsViewModel
 
 class DetailsReviewsFragment : Fragment() {
 
@@ -22,31 +20,20 @@ class DetailsReviewsFragment : Fragment() {
         fun newInstance() = DetailsReviewsFragment()
     }
 
-    private lateinit var viewModel: DetailsReviewsViewModel
+    private var _binding: FragmentDetailsReviewsBinding? = null
+    private val binding get() = _binding!!
 
-    private lateinit var rvReviewsList: RecyclerView
-    private lateinit var reviewsListAdapter: ReviewListAdapter
-    private lateinit var linearLayoutManager: LinearLayoutManager
+    private val viewModel: DetailsReviewsViewModel by activityViewModels()
 
     private var reviewsList: ArrayList<Review> = ArrayList<Review>()
-
-    private lateinit var v: View
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        v = inflater.inflate(R.layout.fragment_details_reviews, container, false)
+        _binding = FragmentDetailsReviewsBinding.inflate(inflater, container, false)
 
-        rvReviewsList = v.findViewById(R.id.rv_reviews_list)
-
-        return v
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(DetailsReviewsViewModel::class.java)
-        // TODO: Use the ViewModel
+        return binding.root
     }
 
     override fun onStart() {
@@ -61,18 +48,19 @@ class DetailsReviewsFragment : Fragment() {
         reviewsList.add(Review("El niño que vivió","Tremenda app!",5.0,
         "https://aws.revistavanityfair.es/prod/designs/v1/assets/785x589/39710.jpg"))
 
-        rvReviewsList.setHasFixedSize(true)
-        linearLayoutManager = LinearLayoutManager(context)
-        rvReviewsList.layoutManager = linearLayoutManager
-
-        reviewsListAdapter = ReviewListAdapter(reviewsList){item ->
+        val reviewsListAdapter = ReviewListAdapter(reviewsList){item ->
             onItemClick(item)
         }
-        rvReviewsList.adapter = reviewsListAdapter
-        rvReviewsList.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+
+        with(binding.rvReviewsList) {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(context)
+            adapter = reviewsListAdapter
+            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+        }
     }
 
     private fun onItemClick(item: Review) {
-        Snackbar.make(v, "TODO: hacer algo con esto", Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(binding.root, "TODO: hacer algo con esto", Snackbar.LENGTH_SHORT).show()
     }
 }

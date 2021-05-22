@@ -6,13 +6,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
-
-import com.utn.hwstore.R
+import com.utn.hwstore.databinding.FragmentDetailsTechnicalBinding
+import com.utn.hwstore.viewmodels.DetailsTechnicalViewModel
+import com.utn.hwstore.viewmodels.DetailsViewModel
 
 class DetailsTechnicalFragment : Fragment() {
 
@@ -20,46 +19,34 @@ class DetailsTechnicalFragment : Fragment() {
         fun newInstance() = DetailsTechnicalFragment()
     }
 
-    private lateinit var viewModel: DetailsTechnicalViewModel
-    private lateinit var viewModelDetails: DetailsViewModel
+    private var _binding: FragmentDetailsTechnicalBinding? = null
+    private val binding get() = _binding!!
 
-    private lateinit var txtDetails: TextView
-    private lateinit var txtPrice: TextView
-    private lateinit var imageItem: ImageView
-    private lateinit var v: View
+    private val viewModel: DetailsTechnicalViewModel by activityViewModels()
+    private val viewModelDetails: DetailsViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        v = inflater.inflate(R.layout.fragment_details_technical, container, false)
+        _binding = FragmentDetailsTechnicalBinding.inflate(inflater, container, false)
 
-        txtDetails = v.findViewById(R.id.txt_specs)
-        txtPrice = v.findViewById(R.id.txt_price)
-        imageItem = v.findViewById(R.id.iv_item)
-
-        return v
+        return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(requireActivity()).get(DetailsTechnicalViewModel::class.java)
-        viewModelDetails = ViewModelProvider(requireActivity()).get(DetailsViewModel::class.java)
 
         viewModelDetails.item.observe(viewLifecycleOwner, Observer { result ->
-            Log.d("DETAILS","Item selected: ${result.brand} ${result.model}")
-            Glide.with(v)
+            Log.d("DETAILS", "Item selected: ${result.brand} ${result.model}")
+            Glide.with(binding.root)
                 .load(result.imageURL)
                 .centerCrop()
-                .into(imageItem)
+                .into(binding.ivItem)
 
-            txtDetails.text = result.description
-            val price = "$ ${result.price.toString()}"
-            txtPrice.text = price
+            binding.txtSpecs.text = result.description
+            val price = "$ ${result.price}"
+            binding.txtPrice.text = price
         })
-    }
-
-    override fun onStart() {
-        super.onStart()
     }
 }
