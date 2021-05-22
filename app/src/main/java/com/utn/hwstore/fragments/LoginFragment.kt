@@ -1,5 +1,6 @@
 package com.utn.hwstore.fragments
 
+import android.app.AlertDialog
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
@@ -12,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -35,6 +37,10 @@ class LoginFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
+
+        // Test user credentials
+        binding.edtUsername.setText("demo@app.com")
+        binding.edtPassword.setText("demoapp")
 
         return binding.root
     }
@@ -88,10 +94,12 @@ class LoginFragment : Fragment() {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.exception)
                             Snackbar.make(binding.root, "Authentication failed.", Snackbar.LENGTH_SHORT).show()
+                            showDialog("Oops!",getString(R.string.msg_user_input_error))
                             binding.txtErrormsg.text = getString(R.string.msg_user_input_error)
                         }
                     }
             } else {
+                showDialog("Oops!",getString(R.string.msg_user_input_incomplete))
                 binding.txtErrormsg.text = getString(R.string.msg_user_input_incomplete)
             }
         }
@@ -103,7 +111,8 @@ class LoginFragment : Fragment() {
          */
 
         binding.txtRememberPassword.setOnClickListener {
-            Snackbar.make(binding.root, "Jodete", Snackbar.LENGTH_LONG).show()
+            //Snackbar.make(binding.root, "Jodete", Snackbar.LENGTH_LONG).show()
+            showDialog("Jodete","No tuve ganas de implementarlo")
         }
 
     }
@@ -122,7 +131,7 @@ class LoginFragment : Fragment() {
             } catch (e: ApiException) {
                 // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in failed", e)
-                // ...
+                showDialog("Error", "Revisar en en logcat. Si es ApiException 10, error de SHA-1")
             }
         }
     }
@@ -147,5 +156,15 @@ class LoginFragment : Fragment() {
                     Snackbar.make(binding.root, "Authentication Failed.", Snackbar.LENGTH_SHORT).show()
                 }
             }
+    }
+
+    private fun showDialog(title: String, message: String) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton("Aceptar") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 }

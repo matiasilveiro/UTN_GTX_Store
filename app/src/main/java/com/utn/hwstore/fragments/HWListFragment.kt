@@ -1,9 +1,12 @@
 package com.utn.hwstore.fragments
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -32,7 +35,6 @@ class HWListFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: HWListViewModel by activityViewModels()
-    private var itemsList: ArrayList<HwItem> = ArrayList()
 
     private val viewModelDetails: DetailsViewModel by activityViewModels()
     private val viewModelShoppingCart: ShoppingCartViewModel by activityViewModels()
@@ -44,7 +46,7 @@ class HWListFragment : Fragment() {
         _binding = FragmentHwListBinding.inflate(inflater, container, false)
 
         setHasOptionsMenu(true)
-        activity?.title = "GTX Store - Lista de productos"
+        (activity as AppCompatActivity).supportActionBar?.title = "GTX Store - Lista de productos"
 
         return binding.root
     }
@@ -77,18 +79,12 @@ class HWListFragment : Fragment() {
         }
 
         binding.btnAddItem.setOnClickListener {
-            val action = HWListFragmentDirections.actionHWListFragmentToNewItemFragment(HwItem("","","","","",0.0,"",""))
+            val action = HWListFragmentDirections.actionHWListFragmentToNewItemFragment(null)
             findNavController().navigate(action)
         }
 
         binding.btnLogOut.setOnClickListener {
-            val auth = FirebaseAuth.getInstance()
-            auth.signOut()
-            Snackbar.make(binding.root, "Sesión cerrada", Snackbar.LENGTH_SHORT).show()
-
-            val intent = Intent(context, LoginActivity::class.java)
-            startActivity(intent)
-            activity?.finish()
+            logoutDialog()
         }
     }
 
@@ -115,12 +111,30 @@ class HWListFragment : Fragment() {
 
         when(item.itemId) {
             R.id.shopping_cart -> {
-                //Snackbar.make(v, "Shopping cart", Snackbar.LENGTH_SHORT).show()
                 val action = HWListFragmentDirections.actionHWListFragmentToShoppingCartFragment()
                 findNavController().navigate(action)
             }
-            else -> Snackbar.make(binding.root, "Undefined", Snackbar.LENGTH_SHORT).show()
+            //else -> Snackbar.make(binding.root, "Undefined", Snackbar.LENGTH_SHORT).show()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun logoutDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Cerrar sesión")
+            .setMessage("¿Estás seguro que deseas cerrar sesión?")
+            .setPositiveButton("Aceptar") { dialog: DialogInterface, which: Int ->
+                val auth = FirebaseAuth.getInstance()
+                auth.signOut()
+                Snackbar.make(binding.root, "Sesión cerrada", Snackbar.LENGTH_SHORT).show()
+
+                val intent = Intent(context, LoginActivity::class.java)
+                startActivity(intent)
+                activity?.finish()
+            }
+            .setNegativeButton("Cancelar") { dialog: DialogInterface, which: Int ->
+                dialog.dismiss()
+            }
+            .show()
     }
 }

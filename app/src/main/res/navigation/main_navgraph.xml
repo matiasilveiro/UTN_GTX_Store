@@ -52,7 +52,9 @@
         tools:layout="@layout/fragment_new_item" >
         <argument
             android:name="item"
-            app:argType="com.utn.hwstore.entities.HwItem" />
+            app:argType="com.utn.hwstore.entities.HwItem"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
     <fragment
         android:id="@+id/details2Fragment"

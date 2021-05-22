@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,15 +28,13 @@ class ShoppingCartFragment : Fragment() {
 
     private var itemsList: ArrayList<HwItem> = ArrayList()
 
-    private lateinit var v: View
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentShoppingCartBinding.inflate(inflater, container, false)
 
-        activity?.title = "Carrito de compras"
+        (activity as AppCompatActivity).supportActionBar?.title = "Carrito de compras"
 
         return binding.root
     }
@@ -44,7 +43,7 @@ class ShoppingCartFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         viewModel.subtotal.observe(viewLifecycleOwner, Observer { result ->
-            val btnText = "Comprar carrito ($${result.toString()})"
+            val btnText = "Comprar carrito ($${result})"
             binding.btnCheckout.text = btnText
         })
     }
@@ -64,12 +63,12 @@ class ShoppingCartFragment : Fragment() {
         }
 
         binding.btnCheckout.setOnClickListener {
-            Snackbar.make(v, "Proximamente...",Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(binding.root, "Proximamente...",Snackbar.LENGTH_SHORT).show()
         }
     }
 
     private fun onItemClick(item: HwItem) {
-        Snackbar.make(v, "TODO: Dialog para remover del carrito", Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(binding.root, "TODO: Dialog para remover del carrito", Snackbar.LENGTH_SHORT).show()
         val subtotal = viewModel.subtotal.value?.minus(item.price)
         viewModel.subtotal.value = subtotal
     }

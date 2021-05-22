@@ -1,5 +1,6 @@
 package com.utn.hwstore.fragments
 
+import android.app.AlertDialog
 import android.content.ContentValues.TAG
 import android.net.Uri
 import android.os.Bundle
@@ -10,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
@@ -38,8 +40,6 @@ class NewItemFragment : Fragment() {
     private var modifyProduct: Boolean = false
     private var modifyImage: Boolean = false
 
-    private lateinit var v: View
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -49,13 +49,12 @@ class NewItemFragment : Fragment() {
 
         setHasOptionsMenu(true)
 
-        if(args.item.brand.isNotBlank()) {
-            fillDataFields(args.item)
+        (activity as AppCompatActivity).supportActionBar?.title = "Nuevo producto"
+        args.item?.let {
+            fillDataFields(it)
             modifyProduct = true
-            activity?.title = "Editar producto"
+            (activity as AppCompatActivity).supportActionBar?.title = "Editar producto"
             binding.btnSaveProduct.text = "Modificar producto"
-        } else {
-            activity?.title = "Nuevo producto"
         }
 
         return binding.root
@@ -94,7 +93,7 @@ class NewItemFragment : Fragment() {
                     }
                 }
             } else {
-                Snackbar.make(v, "Por favor rellene todos los campos", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(binding.root, "Por favor rellene todos los campos", Snackbar.LENGTH_SHORT).show()
             }
         }
 
@@ -107,7 +106,7 @@ class NewItemFragment : Fragment() {
                 .show { uri->
                     //Snackbar.make(v,"Image selected: $uri",Snackbar.LENGTH_SHORT).show()
                     binding.imgNewItem.visibility = View.VISIBLE
-                    Glide.with(v)
+                    Glide.with(binding.root)
                         .load(uri)
                         .centerCrop()
                         .into(binding.imgNewItem)
@@ -129,18 +128,18 @@ class NewItemFragment : Fragment() {
             item.uid = reference.id
             db.collection("Products").document(reference.id).set(item).await()
 
-            Snackbar.make(v, "Producto añadido: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
-            v.findNavController().navigateUp()
+            Snackbar.make(binding.root, "Producto añadido: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+            findNavController().navigateUp()
 
         } catch (e: Exception) {
             when(e) {
                 is FirebaseFirestoreException -> {
                     Log.d(TAG, "FirestoreException: $e")
-                    Snackbar.make(v, "Error añadiendo producto: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(binding.root, "Error añadiendo producto: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
                 }
                 is StorageException -> {
                     Log.d(TAG, "StorageException: $e")
-                    Snackbar.make(v, "Error subiendo imagen: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(binding.root, "Error subiendo imagen: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
                 }
             }
         }
@@ -155,18 +154,20 @@ class NewItemFragment : Fragment() {
             }
             db.collection("Products").document(item.uid).set(item).await()
 
-            Snackbar.make(v, "Producto modificado: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
-            v.findNavController().navigateUp()
+            Snackbar.make(binding.root, "Producto modificado: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+            findNavController().navigateUp()
             
         } catch (e: Exception) {
             when(e) {
                 is FirebaseFirestoreException -> {
                     Log.d(TAG, "FirestoreException: $e")
-                    Snackbar.make(v, "Error modificando producto: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+                    //Snackbar.make(binding.root, "Error modificando producto: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+                    showDialog("Oops, ocurrió un error","Error modificando producto: ${item.brand} ${item.model}")
                 }
                 is StorageException -> {
                     Log.d(TAG, "StorageException: $e")
-                    Snackbar.make(v, "Error subiendo imagen: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(binding.root, "Error subiendo imagen: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+                    showDialog("Oops, ocurrió un error","Error subiendo imagen: ${item.brand} ${item.model}")
                 }
             }
         }
@@ -218,9 +219,19 @@ class NewItemFragment : Fragment() {
         imgURL = item.imageURL
 
         binding.imgNewItem.visibility = View.VISIBLE
-        Glide.with(v)
+        Glide.with(binding.root)
             .load(imgURL)
             .centerCrop()
             .into(binding.imgNewItem)
+    }
+
+    private fun showDialog(title: String, message: String) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton("Aceptar") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 }

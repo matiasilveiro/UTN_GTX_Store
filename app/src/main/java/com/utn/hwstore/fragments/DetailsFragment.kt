@@ -4,6 +4,7 @@ import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.activityViewModels
@@ -50,7 +51,7 @@ class DetailsFragment : Fragment() {
         setHasOptionsMenu(true)
 
         val item = args.item
-        activity?.title = "Detalles: ${item.brand} ${item.model}"
+        (activity as AppCompatActivity).supportActionBar?.title = "Detalles: ${item.brand} ${item.model}"
 
         return binding.root
     }
