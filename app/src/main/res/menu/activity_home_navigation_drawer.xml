@@ -23,7 +23,7 @@
         android:id="@+id/group1"
         android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_add_article"
+            android:id="@+id/newItemFragment"
             android:icon="@drawable/ic_add_white_24dp"
             android:title="Agregar artículo" />
     </group>
@@ -32,7 +32,7 @@
         <menu>
             <group android:checkableBehavior="single">
                 <item
-                    android:id="@+id/nav_shopping_cart"
+                    android:id="@+id/shoppingCartFragment"
                     android:icon="@drawable/ic_shopping_cart_white_24dp"
                     android:title="Carrito de compras" />
             </group>
