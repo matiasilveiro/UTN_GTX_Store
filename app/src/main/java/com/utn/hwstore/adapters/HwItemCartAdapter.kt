@@ -1,30 +1,23 @@
 package com.utn.hwstore.adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.utn.hwstore.R
+import com.utn.hwstore.databinding.ItemCartListBorderlessBinding
 import com.utn.hwstore.entities.HwItem
 
+class HwItemCartAdapter(private val itemList: ArrayList<HwItem>, val onItemLongClick: (HwItem) -> Unit): RecyclerView.Adapter<HwItemCartAdapter.ViewHolder>() {
 
-class HwItemCartAdapter(private val itemList: ArrayList<HwItem>, val onItemLongClick: (HwItem) -> Unit): RecyclerView.Adapter<HwItemCartAdapter.HwItemViewHolder>() {
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HwItemViewHolder {
-        val view =  LayoutInflater.from(parent.context).inflate(R.layout.item_cart_list_borderless,parent,false)
-        return HwItemViewHolder(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val binding = ItemCartListBorderlessBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: HwItemViewHolder, position: Int) {
-        holder.setBrand(itemList[position].brand)
-        holder.setModel(itemList[position].model)
-        holder.setImage(itemList[position].imageURL)
-        holder.setPrice(itemList[position].price)
-        holder.getCardLayout().setOnLongClickListener {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(itemList[position], null)
+
+        holder.binding.cvCartItem.setOnLongClickListener {
             onItemLongClick(itemList[position])
             itemList.removeAt(position)
             notifyItemRemoved(position)
@@ -37,34 +30,20 @@ class HwItemCartAdapter(private val itemList: ArrayList<HwItem>, val onItemLongC
         return itemList.size
     }
 
-    class HwItemViewHolder (v: View) : RecyclerView.ViewHolder(v){
-        private var view: View = v
+    class ViewHolder(val binding: ItemCartListBorderlessBinding) : RecyclerView.ViewHolder(binding.cvCartItem) {
 
-        internal fun setBrand(name: String) {
-            val brand = view.findViewById(R.id.txt_brand) as TextView
-            brand.text = name
-        }
-
-        internal fun setModel(address: String) {
-            val model = view.findViewById(R.id.txt_model) as TextView
-            model.text = address
-        }
-
-        internal fun setPrice(price: Double) {
-            val priceTxt = view.findViewById(R.id.txt_price) as TextView
-            priceTxt.text = price.toString()
-        }
-
-        internal fun setImage(imageURL: String) {
-            val imageView = view.findViewById(R.id.img_article) as ImageView
-            Glide.with(view)
-                .load(imageURL)
+        internal fun bind(value: HwItem, listener: ((HwItem) -> Unit)?) {
+            binding.txtBrand.text = value.brand
+            binding.txtModel.text = value.model
+            binding.txtPrice.text = value.price.toString()
+            Glide.with(binding.root)
+                .load(value.imageURL)
                 .centerCrop()
-                .into(imageView)
-        }
+                .into(binding.imgArticle)
 
-        internal fun getCardLayout(): CardView {
-            return view.findViewById(R.id.cv_cart_item)
+            binding.cvCartItem.setOnClickListener {
+                listener?.invoke(value)
+            }
         }
     }
 }
