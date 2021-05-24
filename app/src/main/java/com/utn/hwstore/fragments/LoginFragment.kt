@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -21,6 +22,10 @@ import com.utn.hwstore.MainActivity
 
 import com.utn.hwstore.R
 import com.utn.hwstore.databinding.FragmentLoginBinding
+import com.utn.hwstore.entities.MyResult
+import com.utn.hwstore.utils.UsersRepository
+import kotlinx.android.synthetic.main.fragment_new_item.*
+import kotlinx.coroutines.launch
 
 class LoginFragment : Fragment() {
 
@@ -29,6 +34,7 @@ class LoginFragment : Fragment() {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
 
+    private val usersRepository = UsersRepository()
     private val auth = FirebaseAuth.getInstance()
 
     override fun onCreateView(
@@ -48,13 +54,10 @@ class LoginFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        val currentUser = auth.currentUser
+        //tryAutoLogin()
 
-        if(currentUser != null) {
-            val intent = Intent(context, MainActivity::class.java)
-            intent.putExtra("userUid",currentUser.email)
-            startActivity(intent)
-            activity?.finish()
+        binding.btnLogin.setOnClickListener {
+            signInCallback()
         }
 
         binding.btnSignup.setOnClickListener {
@@ -72,49 +75,75 @@ class LoginFragment : Fragment() {
             startActivityForResult(signInIntent, RC_SIGN_IN)
         }
 
-        binding.btnLogin.setOnClickListener {
-            if(binding.edtUsername.text.isNotBlank() and binding.edtPassword.text.isNotBlank()) {
-                val username = binding.edtUsername.text.toString()
-                val password = binding.edtPassword.text.toString()
-
-                auth.signInWithEmailAndPassword(username, password)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            val user = auth.currentUser
-                            Log.d(TAG, "signInWithEmail:success - user:${user?.email}")
-
-                            val intent = Intent(context, MainActivity::class.java)
-                            startActivity(intent)
-                            activity?.finish()
-                            /*
-                            val action = LoginFragmentDirections.actionLoginFragmentToMainNavgraph()
-                            v.findNavController().navigate(action)
-                             */
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:failure", task.exception)
-                            Snackbar.make(binding.root, "Authentication failed.", Snackbar.LENGTH_SHORT).show()
-                            showDialog("Oops!",getString(R.string.msg_user_input_error))
-                            binding.txtErrormsg.text = getString(R.string.msg_user_input_error)
-                        }
-                    }
-            } else {
-                showDialog("Oops!",getString(R.string.msg_user_input_incomplete))
-                binding.txtErrormsg.text = getString(R.string.msg_user_input_incomplete)
-            }
-        }
-
-        /*
-        binding.btnDebug.setOnClickListener {
-            RoomExplorer.show(context, usersDatabase::class.java, "myDB")
-        }
-         */
-
         binding.txtRememberPassword.setOnClickListener {
             //Snackbar.make(binding.root, "Jodete", Snackbar.LENGTH_LONG).show()
             showDialog("Jodete","No tuve ganas de implementarlo")
         }
 
+    }
+
+    private fun signInCallback() {
+        val username = binding.edtUsername.text.toString()
+        val password = binding.edtPassword.text.toString()
+        if(username.isNotBlank() and password.isNotBlank()) {
+            lifecycleScope.launch {
+                enableUI(false)
+                val result = usersRepository.loginWithEmailAndPassword(username, password)
+                enableUI(true)
+                when(result) {
+                    is MyResult.Success -> {
+                        if(result.data) {
+                            Log.d(TAG, "signInWithEmail:success - user:${username}")
+
+                            /*
+                            val intent = Intent(context, MainActivity::class.java)
+                            startActivity(intent)
+                            activity?.finish()
+                             */
+
+                            val action = LoginFragmentDirections.actionLoginFragmentToMainActivity()
+                            findNavController().navigate(action)
+                        }
+                    }
+                    is MyResult.Failure -> {
+                        Log.w(TAG, "signInWithEmail:failure", result.exception)
+                        //Snackbar.make(binding.root, "Authentication failed.", Snackbar.LENGTH_SHORT).show()
+                        showDialog("Oops!",getString(R.string.msg_user_input_error))
+                        binding.txtErrormsg.text = getString(R.string.msg_user_input_error)
+                    }
+                }
+            }
+        } else {
+            showDialog("Oops!",getString(R.string.msg_user_input_incomplete))
+            binding.txtErrormsg.text = getString(R.string.msg_user_input_incomplete)
+        }
+    }
+
+    private fun tryAutoLogin() {
+        lifecycleScope.launch {
+            enableUI(false)
+            val result = usersRepository.getCurrentUser()
+            enableUI(true)
+            when(result) {
+                is MyResult.Success -> {
+                    if(result.data != null) {
+                        /*
+                        val intent = Intent(context, MainActivity::class.java)
+                        intent.putExtra("userUid",result.data.email)
+                        startActivity(intent)
+                        activity?.finish()
+                         */
+                        val action = LoginFragmentDirections.actionLoginFragmentToMainActivity()
+                        findNavController().navigate(action)
+                    } else {
+                        showDialog("Oops, ocurrió un error", "Parece que este usuario no existe")
+                    }
+                }
+                is MyResult.Failure -> {
+                    Log.e("LoginFragment", "Exception retrieving current user: ${result.exception.message}")
+                }
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -156,6 +185,16 @@ class LoginFragment : Fragment() {
                     Snackbar.make(binding.root, "Authentication Failed.", Snackbar.LENGTH_SHORT).show()
                 }
             }
+    }
+
+    private fun enableUI(enable: Boolean) {
+        if(enable) {
+            grayblur.visibility = View.INVISIBLE
+            loader.visibility = View.INVISIBLE
+        } else {
+            grayblur.visibility = View.VISIBLE
+            loader.visibility = View.VISIBLE
+        }
     }
 
     private fun showDialog(title: String, message: String) {

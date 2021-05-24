@@ -18,17 +18,17 @@
             app:popEnterAnim="@anim/fragment_fade_enter"
             app:popExitAnim="@anim/fragment_fade_exit" />
         <action
-            android:id="@+id/action_loginFragment_to_main_navgraph"
-            app:destination="@id/main_navgraph"
-            app:enterAnim="@anim/fragment_fade_enter"
-            app:exitAnim="@anim/fragment_fade_exit"
-            app:popEnterAnim="@anim/fragment_open_enter"
-            app:popExitAnim="@anim/fragment_open_exit" />
+            android:id="@+id/action_loginFragment_to_mainActivity"
+            app:destination="@id/mainActivity" />
     </fragment>
     <fragment
         android:id="@+id/signupFragment"
         android:name="com.utn.hwstore.fragments.SignupFragment"
         android:label="fragment_signup"
         tools:layout="@layout/fragment_signup" />
-    <include app:graph="@navigation/main_navgraph" />
+    <activity
+        android:id="@+id/mainActivity"
+        android:name="com.utn.hwstore.MainActivity"
+        android:label="activity_main"
+        tools:layout="@layout/activity_main" />
 </navigation>

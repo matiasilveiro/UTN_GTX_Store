@@ -1,35 +1,34 @@
 package com.utn.hwstore.fragments
 
+import android.app.AlertDialog
 import android.content.ContentValues.TAG
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import androidx.navigation.findNavController
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.UserProfileChangeRequest
 import com.utn.hwstore.R
 import com.utn.hwstore.databinding.FragmentSignupBinding
+import com.utn.hwstore.entities.MyResult
+import com.utn.hwstore.entities.User
+import com.utn.hwstore.utils.UsersRepository
+import kotlinx.android.synthetic.main.fragment_new_item.*
+import kotlinx.coroutines.launch
 
 class SignupFragment : Fragment() {
-
-    private val auth = FirebaseAuth.getInstance()
 
     private var _binding: FragmentSignupBinding? = null
     private val binding get() = _binding!!
 
+    private val usersRepository = UsersRepository()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding = FragmentSignupBinding.inflate(inflater, container, false)
 
@@ -40,44 +39,63 @@ class SignupFragment : Fragment() {
         super.onStart()
 
         binding.btnCreate.setOnClickListener {
-            if(binding.edtUsername.text.isNotBlank() and binding.edtPassword.text.isNotBlank()) {
-                val username = binding.edtUsername.text.toString()
-                val password = binding.edtPassword.text.toString()
-                val passwordCheck = binding.edtPasswordCheck.text.toString()
+            signUpCallback()
+        }
+    }
 
-                if(password == passwordCheck) {
-                    auth.createUserWithEmailAndPassword(username, password)
-                        .addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Log.d(TAG, "createUserWithEmail:success")
-                                val user = auth.currentUser
+    private fun signUpCallback() {
+        val email = binding.edtUsername.text.toString()
+        val password = binding.edtPassword.text.toString()
+        val passwordCheck = binding.edtPasswordCheck.text.toString()
 
-                                val profileUpdates = UserProfileChangeRequest.Builder()
-                                    .setDisplayName(user?.email?.substringBefore('@'))
-                                    .setPhotoUri(Uri.parse("https://emprendedoresnews.com/wp-content/uploads/2017/09/Larry-Page-Karl-Mondon-BANG-e1565041974268.jpg"))
-                                    .build()
+        if(email.isNotBlank() and password.isNotBlank() and passwordCheck.isNotBlank()) {
+            if(password == passwordCheck) {
+                lifecycleScope.launch {
+                    enableUI(false)
 
-                                user?.updateProfile(profileUpdates)
-                                    ?.addOnCompleteListener { task ->
-                                        if (task.isSuccessful) {
-                                            Log.d(TAG, "User profile updated.")
-                                        }
-                                    }
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                                Snackbar.make(binding.root, "Authentication failed.", Snackbar.LENGTH_SHORT).show()
-                            }
+                    val user = User("", true, email.substringBefore('@'), "", email)
+                    val result = usersRepository.createNewUser(user, email, password)
+
+                    when(result) {
+                        is MyResult.Success -> {
+                            showDialog("¡Acción exitosa!","Usuario creado con éxito")
+                            findNavController().navigateUp()
                         }
-
-                    findNavController().navigateUp()
-                } else {
-                    binding.txtErrormsg.text = getString(R.string.msg_mismatch_passwords)
+                        is MyResult.Failure -> {
+                            Log.w(TAG, "createUserWithEmail:failure", result.exception)
+                            //Snackbar.make(binding.root, "Authentication failed.", Snackbar.LENGTH_SHORT).show()
+                            showDialog("Oops, ocurrió un error","No se pudo crear el usuario solicitado")
+                        }
+                    }
+                    enableUI(true)
                 }
             } else {
-                binding.txtErrormsg.text = getString(R.string.msg_user_input_incomplete)
+                binding.txtErrormsg.text = getString(R.string.msg_mismatch_passwords)
+                showDialog("Oops, ocurrió un error",getString(R.string.msg_mismatch_passwords))
             }
+        } else {
+            binding.txtErrormsg.text = getString(R.string.msg_user_input_incomplete)
+            showDialog("Oops, ocurrió un error",getString(R.string.msg_user_input_incomplete))
+        }
+    }
+
+    private fun showDialog(title: String, message: String) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton("Aceptar") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun enableUI(enable: Boolean) {
+        if(enable) {
+            grayblur.visibility = View.INVISIBLE
+            loader.visibility = View.INVISIBLE
+        } else {
+            grayblur.visibility = View.VISIBLE
+            loader.visibility = View.VISIBLE
         }
     }
 

@@ -89,6 +89,27 @@
         app:layout_constraintStart_toStartOf="@+id/guideline_left"
         app:layout_constraintTop_toBottomOf="@+id/edt_password_check_layout" />
 
+    <TextView
+        android:id="@+id/txt_errormsg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/holo_red_dark"
+        app:layout_constraintBottom_toTopOf="@id/edt_username_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline_top" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/txt_newuser"
+        android:textColor="@android:color/white"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline_top"
+        app:layout_constraintEnd_toStartOf="@+id/guideline_right"
+        app:layout_constraintStart_toStartOf="@+id/guideline_left" />
+
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline_left"
@@ -118,26 +139,34 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.85" />
 
-    <TextView
-        android:id="@+id/txt_errormsg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/holo_red_dark"
-        app:layout_constraintBottom_toTopOf="@id/edt_username_layout"
+    <ImageView
+        android:id="@+id/grayblur"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:elevation="8dp"
+        android:background="#66000000"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/guideline_top" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/textView"
+    <com.agrawalsuneet.dotsloader.loaders.TrailingCircularDotsLoader
+        android:id="@+id/loader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/txt_newuser"
-        android:textColor="@android:color/white"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline_top"
-        app:layout_constraintEnd_toStartOf="@+id/guideline_right"
-        app:layout_constraintStart_toStartOf="@+id/guideline_left" />
+        android:elevation="8dp"
+        android:visibility="invisible"
+        app:trailingcircular_animDelay="200"
+        app:trailingcircular_animDuration="1200"
+        app:trailingcircular_bigCircleRadius="40dp"
+        app:trailingcircular_dotsColor="@color/colorLogin"
+        app:trailingcircular_dotsRadius="11dp"
+        app:trailingcircular_noOfTrailingDots="5"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

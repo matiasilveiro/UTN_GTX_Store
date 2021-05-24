@@ -1,49 +1,6 @@
 package com.utn.hwstore.entities
 
-import android.os.Parcel
-import android.os.Parcelable
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+class User(var uid: String, var enabled: Boolean, var name: String, var profileImage: String, var email: String) {
 
-@Entity(tableName = "users")
-class User(username: String, password: String, uid: String) : Parcelable {
-    @PrimaryKey
-    @ColumnInfo(name = "username")
-    var username: String = username
-
-    @ColumnInfo(name = "password")
-    var password: String = password
-
-    @ColumnInfo(name = "uid")
-    var uid: String = uid
-
-    constructor() : this( "","","")
-
-    constructor(source: Parcel) : this(
-        source.readString()!!,
-        source.readString()!!,
-        source.readString()!!
-    )
-
-    override fun describeContents() = 0
-
-    override fun writeToParcel(dest: Parcel, flags: Int) = with(dest) {
-        writeString(username)
-        writeString(password)
-        writeString(uid)
-    }
-
-    companion object {
-        @JvmField
-        val CREATOR: Parcelable.Creator<User> = object : Parcelable.Creator<User> {
-            override fun createFromParcel(source: Parcel): User = User(source)
-            override fun newArray(size: Int): Array<User?> = arrayOfNulls(size)
-        }
-    }
-
-    override fun equals(other: Any?): Boolean {
-        val user = other as User
-        return (this.username.equals(user.username) and this.password.equals(user.password) and this.uid.equals(user.uid))
-    }
+    constructor() : this("", false,"","","")
 }
