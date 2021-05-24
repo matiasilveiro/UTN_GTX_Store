@@ -25,28 +25,28 @@ class DetailsReviewsFragment : Fragment() {
 
     private val viewModel: DetailsReviewsViewModel by activityViewModels()
 
-    private var reviewsList: ArrayList<Review> = ArrayList<Review>()
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentDetailsReviewsBinding.inflate(inflater, container, false)
 
+        setupRecyclerView()
+
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
+    private fun setupRecyclerView() {
+        val reviewsList = arrayListOf<Review>()
 
         reviewsList.add(Review("Gregory House","Tremenda app!",5.0,
             "https://pbs.twimg.com/profile_images/1227175449681448962/hWMd9_nJ_400x400.jpg"))
         reviewsList.add(Review("Elon Musk","Mas o menos eh, incompleta",4.0,
-        "https://i0.wp.com/espacionegocios.com.ar/wp-content/uploads/2020/02/elon-musk.jpg"))
+            "https://i0.wp.com/espacionegocios.com.ar/wp-content/uploads/2020/02/elon-musk.jpg"))
         reviewsList.add(Review("Mark","Tremenda app igual!",4.9,
-        "https://tentulogo.com/wp-content/uploads/Mark-Zuckerberg.jpg"))
+            "https://tentulogo.com/wp-content/uploads/Mark-Zuckerberg.jpg"))
         reviewsList.add(Review("El niño que vivió","Tremenda app!",5.0,
-        "https://aws.revistavanityfair.es/prod/designs/v1/assets/785x589/39710.jpg"))
+            "https://aws.revistavanityfair.es/prod/designs/v1/assets/785x589/39710.jpg"))
 
         val reviewsListAdapter = ReviewListAdapter(reviewsList){item ->
             onItemClick(item)

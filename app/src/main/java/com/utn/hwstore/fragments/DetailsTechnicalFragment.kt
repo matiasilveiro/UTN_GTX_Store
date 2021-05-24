@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
 import com.utn.hwstore.databinding.FragmentDetailsTechnicalBinding
+import com.utn.hwstore.entities.HwItem
 import com.utn.hwstore.viewmodels.DetailsTechnicalViewModel
 import com.utn.hwstore.viewmodels.DetailsViewModel
 
@@ -37,16 +38,19 @@ class DetailsTechnicalFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        viewModelDetails.item.observe(viewLifecycleOwner, Observer { result ->
-            Log.d("DETAILS", "Item selected: ${result.brand} ${result.model}")
-            Glide.with(binding.root)
-                .load(result.imageURL)
-                .centerCrop()
-                .into(binding.ivItem)
-
-            binding.txtSpecs.text = result.description
-            val price = "$ ${result.price}"
-            binding.txtPrice.text = price
+        viewModelDetails.item.observe(viewLifecycleOwner, Observer { value ->
+            updateItemDetails(value)
         })
+    }
+
+    private fun updateItemDetails(item: HwItem) {
+        Log.d("DETAILS", "Item selected: ${item.brand} ${item.model}")
+        Glide.with(binding.root)
+            .load(item.imageURL)
+            .centerCrop()
+            .into(binding.ivItem)
+
+        binding.txtSpecs.text = item.description
+        binding.txtPrice.text = "$ ${item.price}"
     }
 }

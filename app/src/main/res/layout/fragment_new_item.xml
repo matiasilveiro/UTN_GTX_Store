@@ -9,50 +9,29 @@
     android:fillViewport="true"
     tools:context=".fragments.NewItemFragment">
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/grayblur"
+            android:id="@+id/img_new_item"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="#8D615D5D"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <com.agrawalsuneet.dotsloader.loaders.TrailingCircularDotsLoader
-            android:id="@+id/loader"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="invisible"
-            app:trailingcircular_animDelay="200"
-            app:trailingcircular_animDuration="1200"
-            app:trailingcircular_bigCircleRadius="40dp"
-            app:trailingcircular_dotsColor="@color/colorLogin"
-            app:trailingcircular_dotsRadius="11dp"
-            app:trailingcircular_noOfTrailingDots="5"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
+            app:layout_constraintDimensionRatio="H,16:9"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guideline_left"
+            app:layout_constraintEnd_toEndOf="@id/guideline_right"
+            tools:src="@tools:sample/avatars" />
 
         <ss.anoop.awesometextinputlayout.AwesomeTextInputLayout
             android:id="@+id/awesomeLayout1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
+            android:layout_marginTop="20dp"
             android:padding="16dp"
             app:borderColor="@color/colorPrimary"
             app:borderWidth="2dp"
             app:cornerRadius="16dp"
-            app:layout_constraintBottom_toTopOf="@+id/awesomeLayout2"
             app:layout_constraintEnd_toEndOf="@id/guideline_right"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="@id/guideline_left"
@@ -66,39 +45,35 @@
         </ss.anoop.awesometextinputlayout.AwesomeTextInputLayout>
 
         <ss.anoop.awesometextinputlayout.AwesomeTextInputLayout
-            android:id="@+id/awesomeLayout4"
+            android:id="@+id/awesomeLayout2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
+            android:layout_marginTop="20dp"
             android:padding="16dp"
             app:borderColor="@color/colorPrimary"
             app:borderWidth="2dp"
             app:cornerRadius="16dp"
-            app:layout_constraintBottom_toTopOf="@+id/awesomeLayout5"
             app:layout_constraintEnd_toEndOf="@id/guideline_right"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="@id/guideline_left"
-            app:layout_constraintTop_toBottomOf="@+id/awesomeLayout3">
+            app:layout_constraintTop_toBottomOf="@+id/awesomeLayout1">
 
             <EditText
-                android:id="@+id/edt_specs"
+                android:id="@+id/edt_model"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Especificaciones" />
+                android:hint="Modelo" />
         </ss.anoop.awesometextinputlayout.AwesomeTextInputLayout>
 
         <ss.anoop.awesometextinputlayout.AwesomeTextInputLayout
             android:id="@+id/awesomeLayout3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
+            android:layout_marginTop="20dp"
             android:padding="16dp"
             app:borderColor="@color/colorPrimary"
             app:borderWidth="2dp"
             app:cornerRadius="16dp"
-            app:layout_constraintBottom_toTopOf="@+id/awesomeLayout4"
             app:layout_constraintEnd_toEndOf="@id/guideline_right"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="@id/guideline_left"
@@ -112,16 +87,35 @@
         </ss.anoop.awesometextinputlayout.AwesomeTextInputLayout>
 
         <ss.anoop.awesometextinputlayout.AwesomeTextInputLayout
-            android:id="@+id/awesomeLayout5"
+            android:id="@+id/awesomeLayout4"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
+            android:layout_marginTop="20dp"
             android:padding="16dp"
             app:borderColor="@color/colorPrimary"
             app:borderWidth="2dp"
             app:cornerRadius="16dp"
-            app:layout_constraintBottom_toTopOf="@id/btn_save_product"
+            app:layout_constraintEnd_toEndOf="@id/guideline_right"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@id/guideline_left"
+            app:layout_constraintTop_toBottomOf="@+id/awesomeLayout3">
+
+            <EditText
+                android:id="@+id/edt_specs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Especificaciones" />
+        </ss.anoop.awesometextinputlayout.AwesomeTextInputLayout>
+
+        <ss.anoop.awesometextinputlayout.AwesomeTextInputLayout
+            android:id="@+id/awesomeLayout5"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:padding="16dp"
+            app:borderColor="@color/colorPrimary"
+            app:borderWidth="2dp"
+            app:cornerRadius="16dp"
             app:layout_constraintEnd_toEndOf="@id/guideline_right"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="@id/guideline_left"
@@ -135,80 +129,81 @@
                 android:inputType="numberDecimal" />
         </ss.anoop.awesometextinputlayout.AwesomeTextInputLayout>
 
-        <ss.anoop.awesometextinputlayout.AwesomeTextInputLayout
-            android:id="@+id/awesomeLayout2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:padding="16dp"
-            app:borderColor="@color/colorPrimary"
-            app:borderWidth="2dp"
-            app:cornerRadius="16dp"
-            app:layout_constraintBottom_toTopOf="@+id/awesomeLayout3"
-            app:layout_constraintEnd_toEndOf="@id/guideline_right"
-            app:layout_constraintHorizontal_bias="0.5"
+        <Button
+            android:id="@+id/btn_choose_image"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/btn_rounded"
+            android:text="Imagen de portada"
+            android:textColor="@android:color/white"
+            app:layout_constraintEnd_toEndOf="@+id/guideline_right"
             app:layout_constraintStart_toStartOf="@id/guideline_left"
-            app:layout_constraintTop_toBottomOf="@+id/awesomeLayout1">
-
-            <EditText
-                android:id="@+id/edt_model"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Modelo" />
-        </ss.anoop.awesometextinputlayout.AwesomeTextInputLayout>
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_left"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.1" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline_right"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.9" />
-
-        <ImageView
-            android:id="@+id/img_new_item"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintDimensionRatio="H,16:6"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@tools:sample/avatars" />
+            app:layout_constraintTop_toBottomOf="@id/img_new_item"/>
 
         <Button
             android:id="@+id/btn_save_product"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/btn_rounded"
             android:text="Crear producto"
             android:textColor="@android:color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline_right"
             app:layout_constraintStart_toStartOf="@+id/guideline_left"
             app:layout_constraintTop_toBottomOf="@+id/awesomeLayout5" />
 
-        <Button
-            android:id="@+id/btn_choose_image"
-            android:layout_width="200dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:background="@drawable/btn_rounded"
-            android:text="Imagen de portada"
-            android:textColor="@android:color/white"
-            app:layout_constraintBottom_toTopOf="@id/awesomeLayout1"
-            app:layout_constraintEnd_toEndOf="@+id/guideline_right"
-            app:layout_constraintStart_toStartOf="@id/guideline_left"
-            app:layout_constraintTop_toBottomOf="@id/img_new_item"/>
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="40dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintTop_toBottomOf="@id/btn_save_product"/>
+
+
+        <ImageView
+            android:id="@+id/grayblur"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:elevation="8dp"
+            android:background="#8D615D5D"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.agrawalsuneet.dotsloader.loaders.TrailingCircularDotsLoader
+            android:id="@+id/loader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="8dp"
+            android:visibility="invisible"
+            app:trailingcircular_animDelay="200"
+            app:trailingcircular_animDuration="1200"
+            app:trailingcircular_bigCircleRadius="40dp"
+            app:trailingcircular_dotsColor="@color/colorLogin"
+            app:trailingcircular_dotsRadius="11dp"
+            app:trailingcircular_noOfTrailingDots="5"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.1" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.9" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

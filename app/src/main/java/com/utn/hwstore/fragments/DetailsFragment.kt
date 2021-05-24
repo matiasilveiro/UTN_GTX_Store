@@ -1,5 +1,6 @@
 package com.utn.hwstore.fragments
 
+import android.app.AlertDialog
 import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
@@ -13,18 +14,17 @@ import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageException
 import com.rowland.cartcounter.view.CartCounterActionView
 import com.utn.hwstore.R
 import com.utn.hwstore.databinding.FragmentDetailsBinding
 import com.utn.hwstore.entities.HwItem
+import com.utn.hwstore.entities.MyResult
+import com.utn.hwstore.utils.ShopRepository
 import com.utn.hwstore.viewmodels.DetailsViewModel
 import com.utn.hwstore.viewmodels.ShoppingCartViewModel
 import kotlinx.coroutines.*
-import kotlinx.coroutines.tasks.await
 
 class DetailsFragment : Fragment() {
 
@@ -38,9 +38,9 @@ class DetailsFragment : Fragment() {
     private val viewModel: DetailsViewModel by activityViewModels()
     private val viewModelShoppingCart: ShoppingCartViewModel by activityViewModels()
 
-    private lateinit var actionView: CartCounterActionView
-
     private val args: DetailsFragmentArgs by navArgs()
+    private lateinit var actionView: CartCounterActionView
+    private val shopRepository = ShopRepository()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,6 +51,7 @@ class DetailsFragment : Fragment() {
         setHasOptionsMenu(true)
 
         val item = args.item
+        viewModel.item.value = item
         (activity as AppCompatActivity).supportActionBar?.title = "Detalles: ${item.brand} ${item.model}"
 
         return binding.root
@@ -66,28 +67,22 @@ class DetailsFragment : Fragment() {
         actionView = itemData.actionView as CartCounterActionView
         actionView.setItemData(menu, itemData)
         actionView.count = viewModelShoppingCart.cart.size
+
         return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
         when(item.itemId) {
             R.id.shopping_cart -> {
                 val action = DetailsFragmentDirections.actionDetailsFragmentToShoppingCartFragment()
                 findNavController().navigate(action)
             }
             R.id.edit_item -> {
-                Snackbar.make(binding.root, "Editar item", Snackbar.LENGTH_SHORT).show()
                 val action = DetailsFragmentDirections.actionDetailsFragmentToNewItemFragment(viewModel.item.value!!)
                 findNavController().navigate(action)
             }
             R.id.remove_item -> {
-                val parentJob = Job()
-                val fbScope = CoroutineScope(Dispatchers.Default + parentJob)
-                fbScope.launch {
-                    deleteItemFromFirebase(args.item)
-                    findNavController().navigateUp()
-                }
+                deleteItemFromFirebase(args.item)
             }
             else -> Log.d(TAG, "DetailsFragment: MenuItem not found")
         }
@@ -109,43 +104,67 @@ class DetailsFragment : Fragment() {
         }).attach()
 
         binding.btnAddToCart.setOnClickListener {
-            val product = viewModel.item.value!!
-            viewModelShoppingCart.cart.add(product)
-            viewModelShoppingCart.subtotal.value = viewModelShoppingCart.subtotal.value?.plus(product.price)
-            actionView.count = viewModelShoppingCart.cart.size
-
-            Snackbar.make(binding.root, "Agregado al carrito", Snackbar.LENGTH_SHORT)
-                .setAction("Deshacer") {
-                    viewModelShoppingCart.cart.removeAt(viewModelShoppingCart.cart.size-1)
-                    viewModelShoppingCart.subtotal.value = viewModelShoppingCart.subtotal.value?.minus(product.price)
-
-                    actionView.count = viewModelShoppingCart.cart.size
-                    Snackbar.make(binding.root, "Eliminado del carrito", Snackbar.LENGTH_SHORT).show()
-                }.show()
+            addItemToCart()
         }
     }
 
-    private suspend fun deleteItemFromFirebase(item: HwItem) {
-        try {
-            val storageRef = FirebaseStorage.getInstance().reference
-            storageRef.child("images/${item.model}").delete().await()
+    private fun addItemToCart() {
+        val product = viewModel.item.value!!
 
-            val db = FirebaseFirestore.getInstance()
-            db.collection("Products").document(item.uid).delete().await()
+        viewModelShoppingCart.cart.add(product)
+        //viewModelShoppingCart.subtotal.value = viewModelShoppingCart.subtotal.value?.plus(product.price)
+        actionView.count = viewModelShoppingCart.cart.size
 
-            Snackbar.make(binding.root, "Producto eliminado: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
-        } catch (e: Exception) {
-            when(e) {
-                is FirebaseFirestoreException -> {
-                    Log.d(TAG, "FirestoreException: $e")
-                    Snackbar.make(binding.root, "Error eliminando producto: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(binding.root, "Agregado al carrito", Snackbar.LENGTH_SHORT)
+            .setAction("Deshacer") {
+                viewModelShoppingCart.cart.removeAt(viewModelShoppingCart.cart.size-1)
+                //viewModelShoppingCart.subtotal.value = viewModelShoppingCart.subtotal.value?.minus(product.price)
+                actionView.count = viewModelShoppingCart.cart.size
+                Snackbar.make(binding.root, "Eliminado del carrito", Snackbar.LENGTH_SHORT).show()
+            }.show()
+    }
+
+    private fun deleteItemFromFirebase(item: HwItem) {
+        val parentJob = Job()
+        val fbScope = CoroutineScope(Dispatchers.Main + parentJob)    // Main dispatcher para enableUI
+
+        fbScope.launch {
+            val result = shopRepository.deleteItem(item)
+            when(result) {
+                is MyResult.Success -> {
+                    Snackbar.make(binding.root, "Producto eliminado: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+                    findNavController().navigateUp()
                 }
-                is StorageException -> {
-                    Log.d(TAG, "StorageException: $e")
-                    Snackbar.make(binding.root, "Error eliminando imagen: ${item.brand} ${item.model}", Snackbar.LENGTH_SHORT).show()
+                is MyResult.Failure -> {
+                    handleFirebaseException(result.exception)
                 }
             }
         }
+    }
+
+    private fun handleFirebaseException(e: Exception) {
+        when(e) {
+            is FirebaseFirestoreException -> {
+                Log.d(TAG, "FirestoreException: $e")
+                //Snackbar.make(binding.root, "Error añadiendo producto", Snackbar.LENGTH_SHORT).show()
+                showDialog("Oops, ocurrió un error","Error eliminando producto")
+            }
+            is StorageException -> {
+                Log.d(TAG, "StorageException: $e")
+                //Snackbar.make(binding.root, "Error subiendo imagen", Snackbar.LENGTH_SHORT).show()
+                showDialog("Oops, ocurrió un error","Error eliminando imagen")
+            }
+        }
+    }
+
+    private fun showDialog(title: String, message: String) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton("Aceptar") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 
     private fun createCardAdapter(): ViewPagerAdapter? {

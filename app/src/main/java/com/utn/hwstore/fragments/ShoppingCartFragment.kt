@@ -35,6 +35,7 @@ class ShoppingCartFragment : Fragment() {
         _binding = FragmentShoppingCartBinding.inflate(inflater, container, false)
 
         (activity as AppCompatActivity).supportActionBar?.title = "Carrito de compras"
+        viewModel.updateSubtotal()
 
         return binding.root
     }

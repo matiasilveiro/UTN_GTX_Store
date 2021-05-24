@@ -12,47 +12,44 @@ import com.utn.hwstore.R
 import com.utn.hwstore.entities.HwItem
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.utn.hwstore.databinding.ItemListHwBinding
+import kotlin.properties.Delegates
 
+class HwItemAdapter(): RecyclerView.Adapter<HwItemAdapter.ViewHolder>() {
 
-class HwItemAdapter(options: FirestoreRecyclerOptions<HwItem>, val onItemClick: (HwItem) -> Unit) : FirestoreRecyclerAdapter<HwItem, HwItemAdapter.HwItemViewHolder>(options) {
+    var items: List<HwItem> by Delegates.observable(emptyList()) { _, _, _ -> notifyDataSetChanged() }
+    var onClickListener : ( (HwItem) -> Unit )? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HwItemViewHolder {
-        val view =  LayoutInflater.from(parent.context).inflate(R.layout.item_list_hw,parent,false)
-        return HwItemViewHolder(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val binding = ItemListHwBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: HwItemViewHolder, position: Int, model: HwItem) {
-        holder.setBrand(model.brand)
-        holder.setModel(model.model)
-        holder.setImage(model.imageURL)
-        holder.getCardLayout().setOnClickListener {
-            onItemClick(model)
-        }
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(items[position], onClickListener)
     }
 
-    class HwItemViewHolder (v: View) : RecyclerView.ViewHolder(v){
-        private var view: View = v
+    fun setData (data:MutableList<HwItem>){
+        this.items = data
+    }
 
-        internal fun setBrand(name: String) {
-            val brand = view.findViewById(R.id.txt_brand) as TextView
-            brand.text = name
-        }
+    override fun getItemCount(): Int {
+        return items.size
+    }
 
-        internal fun setModel(address: String) {
-            val model = view.findViewById(R.id.txt_model) as TextView
-            model.text = address
-        }
+    class ViewHolder(private val binding: ItemListHwBinding) : RecyclerView.ViewHolder(binding.cvCartItem) {
 
-        internal fun setImage(imageURL: String) {
-            val imageView = view.findViewById(R.id.img_article) as ImageView
-            Glide.with(view)
-                .load(imageURL)
+        internal fun bind(value: HwItem, listener: ((HwItem) -> Unit)?) {
+            binding.txtBrand.text = value.brand
+            binding.txtModel.text = value.model
+            Glide.with(binding.root)
+                .load(value.imageURL)
                 .centerCrop()
-                .into(imageView)
-        }
+                .into(binding.imgArticle)
 
-        internal fun getCardLayout(): CardView {
-            return view.findViewById(R.id.cv_cart_item)
+            binding.cvCartItem.setOnClickListener {
+                listener?.invoke(value)
+            }
         }
     }
 }
