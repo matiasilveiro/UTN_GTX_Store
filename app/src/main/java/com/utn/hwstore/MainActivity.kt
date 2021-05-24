@@ -48,12 +48,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         user?.let {
             Toast.makeText(this, "User: ${user.displayName}", Toast.LENGTH_LONG).show()
-
-            if (user.displayName == "Matías Silveiro") {
-                subscribeToNotificationTopic("notebooks", true)
-            } else {
-                subscribeToNotificationTopic("notebooks", false)
-            }
+            subscribeToNotificationTopic("notebooks", true)
 
             val header = binding.navigationView.getHeaderView(0)
             val headerTitle = header.findViewById<TextView>(R.id.txt_title)
@@ -86,7 +81,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         item.isChecked = true
-
         binding.drawerLayout.closeDrawers()
 
         try {
@@ -160,7 +154,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         "Subscribed successfully to topic notebooks"
                     }
                     Log.d(ContentValues.TAG, msg)
-                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                 }
         } else {
             FirebaseMessaging.getInstance().unsubscribeFromTopic(topic)
@@ -171,7 +165,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         "Unsubscribed successfully to topic notebooks"
                     }
                     Log.d(ContentValues.TAG, msg)
-                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                 }
         }
     }

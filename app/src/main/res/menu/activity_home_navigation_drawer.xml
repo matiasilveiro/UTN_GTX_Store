@@ -4,38 +4,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <item android:title="Mi usuario">
+    <item android:title="Mi perfil">
         <menu>
-            <group android:checkableBehavior="single">
-                <item
-                    android:id="@+id/nav_user_settings"
-                    android:icon="@drawable/ic_settings_white_24dp"
-                    android:title="Configuración" />
-                <item
-                    android:id="@+id/nav_user_logout"
-                    android:icon="@drawable/ic_log_out_white_24dp"
-                    android:title="Cerrar sesión" />
-            </group>
+            <item
+                android:id="@+id/shoppingCartFragment"
+                android:icon="@drawable/ic_shopping_cart_white_24dp"
+                android:title="Carrito de compras" />
         </menu>
     </item>
 
-    <group
-        android:id="@+id/group1"
-        android:checkableBehavior="single">
-        <item
-            android:id="@+id/newItemFragment"
-            android:icon="@drawable/ic_add_white_24dp"
-            android:title="Agregar artículo" />
-    </group>
-
-    <item android:title="Mis compras">
+    <item android:title="Administrador">
         <menu>
-            <group android:checkableBehavior="single">
-                <item
-                    android:id="@+id/shoppingCartFragment"
-                    android:icon="@drawable/ic_shopping_cart_white_24dp"
-                    android:title="Carrito de compras" />
-            </group>
+            <item
+                android:id="@+id/newItemFragment"
+                android:icon="@drawable/ic_add_white_24dp"
+                android:title="Agregar artículo" />
+        </menu>
+    </item>
+
+    <item android:title="Ajustes">
+        <menu>
+            <item
+                android:id="@+id/nav_user_settings"
+                android:icon="@drawable/ic_settings_white_24dp"
+                android:title="Configuración" />
+            <item
+                android:id="@+id/nav_user_logout"
+                android:icon="@drawable/ic_log_out_white_24dp"
+                android:title="Cerrar sesión" />
         </menu>
     </item>
 
