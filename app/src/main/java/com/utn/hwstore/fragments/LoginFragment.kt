@@ -54,7 +54,7 @@ class LoginFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        //tryAutoLogin()
+        tryAutoLogin()
 
         binding.btnLogin.setOnClickListener {
             signInCallback()

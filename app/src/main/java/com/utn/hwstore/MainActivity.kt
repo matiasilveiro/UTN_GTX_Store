@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val user = auth.currentUser
 
         user?.let {
-            Toast.makeText(this, "User: ${user.displayName}", Toast.LENGTH_LONG).show()
+            //Toast.makeText(this, "User: ${user.displayName}", Toast.LENGTH_LONG).show()
             subscribeToNotificationTopic("notebooks", true)
 
             val header = binding.navigationView.getHeaderView(0)

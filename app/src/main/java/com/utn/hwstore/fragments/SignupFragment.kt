@@ -59,6 +59,10 @@ class SignupFragment : Fragment() {
                     when(result) {
                         is MyResult.Success -> {
                             showDialog("¡Acción exitosa!","Usuario creado con éxito")
+
+                            // When you create a Firebase user, you automatically login to it, so...
+                            usersRepository.logout()
+
                             findNavController().navigateUp()
                         }
                         is MyResult.Failure -> {
